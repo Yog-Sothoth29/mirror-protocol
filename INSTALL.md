@@ -55,6 +55,18 @@ node "$HOME/.mirror-protocol/mirror.mjs" use mirror-protocol-auto --restart-exis
 
 如果另一份 Theme Studio 管理器正在运行，安装器拒绝接管它。先用该管理器原本的 **theme.mjs restore** 恢复、停止，再应用本安装；不要同时运行两个主题管理器。
 
+## 普通启动或关闭后驻留导致无法激活
+
+如果 `status` 仍是 inactive，且启动提示 Codex 已运行但没有调试端口，不要再次普通打开应用。先在独立终端运行：
+
+```powershell
+node "$HOME/.mirror-protocol/activate-after-exit.mjs"
+```
+
+看到等待提示后，从 Codex 的菜单**完全退出**应用；不要只关闭窗口，也不要从任务栏重新打开。辅助程序最多等待10分钟，观察到官方进程全部退出后，仅调用原安装入口启动一次带本机调试端口的 Codex。它不请求退出、不结束进程、不自动重试，不创建其他主题管理器。启动完成后仍需 status、verify 和截图检查。
+
+等待状态在 `~/.mirror-protocol/activation.json`，摘要日志在 `activation.log`。建立 `activation.cancel` 文件可以取消等待；下次重新等待前删除该取消文件。卸载或更换安装版本也会自动停止等待。一个安装目录只允许一个等待程序。
+
 ## 恢复与卸载
 
 ```powershell

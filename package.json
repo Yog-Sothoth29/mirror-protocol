@@ -1,6 +1,6 @@
 {
   "name": "mirror-protocol",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "private": true,
   "description": "DeepSeek day/night and Long March intrusion fan theme for Codex desktop; independent preview first.",
   "license": "MIT",
@@ -15,7 +15,8 @@
     "release": "npm run build && node tools/package-release.mjs",
     "install:theme": "node tools/install.mjs",
     "test:install": "node tools/qa/qa-install.mjs",
-    "test:platform": "node runtime/scripts/platform-runtime-test.mjs"
+    "test:platform": "node runtime/scripts/platform-runtime-test.mjs",
+    "test:activation": "node --test tools/qa/qa-activate-after-exit.mjs"
   },
   "devDependencies": {
     "playwright": "1.62.1",

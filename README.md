@@ -4,7 +4,7 @@ DeepSeek 蓝白日间 / 深蓝夜间，与黑红长征机之间的低频随机�
 
 ![镜面协议](docs/media/wechat-cover-900x383.png)
 
-**v2.3.1 · 实验性桌面主题。** 已通过独立 Edge 浏览器夹具验证；真实 Codex 兼容性尚未验收。非 OpenAI、DeepSeek、TFR 或 CD Projekt Red 官方项目。
+**v2.3.2 · 实验性桌面主题。** 已通过独立 Edge 浏览器夹具验证；真实 Codex 兼容性尚未验收。非 OpenAI、DeepSeek、TFR 或 CD Projekt Red 官方项目。
 
 ## 直接让 Codex 安装
 
@@ -27,6 +27,8 @@ node "$HOME/.mirror-protocol/mirror.mjs" use mirror-protocol-auto
 node "$HOME/.mirror-protocol/mirror.mjs" status --json
 node "$HOME/.mirror-protocol/mirror.mjs" verify --screenshot "$HOME/mirror-protocol-check.png"
 ```
+
+若普通启动后无法激活，可运行 `node "$HOME/.mirror-protocol/activate-after-exit.mjs"`，然后从菜单完全退出 Codex；程序等待退出后仅启动一次主题版。
 
 安装器不会自动重启；首次启用本机调试端口可能需要一次获准的正常重启。[Windows 兼容说明](WINDOWS-COMPATIBILITY.md)。
 

@@ -62,7 +62,7 @@ try {
     await fs.copyFile(from, destination);
   }
   for (const file of ['LICENSE', 'ASSET-LICENSE.md', 'THIRD_PARTY_NOTICES.md', 'INSTALL.md']) await copyRegular(path.join(source, file), path.join(release, file));
-  for (const file of ['mirror.mjs', 'uninstall.mjs', 'installer-common.mjs']) await copyRegular(path.join(source, 'tools', file), path.join(realRoot, file));
+  for (const file of ['mirror.mjs', 'uninstall.mjs', 'installer-common.mjs', 'activate-after-exit.mjs']) await copyRegular(path.join(source, 'tools', file), path.join(realRoot, file));
   const record = { owner, version, installRoot: realRoot, currentRelease: path.join('releases', releaseName).replaceAll('\\', '/'), sourceDigest: digest, files, installedAt: new Date().toISOString() };
   const pending = path.join(realRoot, 'installation.' + crypto.randomUUID() + '.json');
   await fs.writeFile(pending, JSON.stringify(record, null, 2) + '\n', { flag: 'wx' });
