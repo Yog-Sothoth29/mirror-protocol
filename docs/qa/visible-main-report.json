@@ -1,0 +1,10 @@
+{
+  "pass": true,
+  "hiddenFirstMainIgnored": true,
+  "rendererAndVerifierAgree": true,
+  "hiddenUiRejected": true,
+  "emptyShellRejected": true,
+  "cleanup": true,
+  "auxiliaryExcluded": true,
+  "fixtureOnly": true
+}

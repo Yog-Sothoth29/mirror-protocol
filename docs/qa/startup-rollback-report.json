@@ -1,0 +1,9 @@
+{
+  "pass": true,
+  "actualCdp": true,
+  "verificationFailureCaptured": true,
+  "watcherStopped": true,
+  "rendererCleanupConfirmed": true,
+  "recoveryStateCleared": true,
+  "actualCodexTouched": false
+}

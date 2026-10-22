@@ -1,4 +1,5 @@
 import { createTitleMotion } from './title-motion.mjs';
+import { visibleMain } from './page-policy.mjs';
 // Constrained dual-state extension to Codex Theme Studio. No network or DOM controls.
 export function mirrorSchedule(config, now) {
   let boundary = config.epochMs;
@@ -32,10 +33,10 @@ export function validateMirrorConfig(raw) {
 
 export function extendRendererExpression(baseExpression, rawConfig) {
   const config = validateMirrorConfig(rawConfig);
-  return `(() => { window.__MIRROR_PROTOCOL__?.dispose?.(); return (${baseExpression.trim()}).then(result => { (${installMirrorProtocol.toString()})(${JSON.stringify(config)}, ${mirrorSchedule.toString()}, ${createTitleMotion.toString()}); return result; }); })()`;
+  return `(() => { window.__MIRROR_PROTOCOL__?.dispose?.(); return (${baseExpression.trim()}).then(result => { (${installMirrorProtocol.toString()})(${JSON.stringify(config)}, ${mirrorSchedule.toString()}, ${createTitleMotion.toString()}, ${visibleMain.toString()}); return result; }); })()`;
 }
 
-export function installMirrorProtocol(config, schedule, titleMotionFactory = createTitleMotion) {
+export function installMirrorProtocol(config, schedule, titleMotionFactory = createTitleMotion, resolveMain = visibleMain) {
   const key = '__MIRROR_PROTOCOL__';
   window[key]?.dispose?.();
   if (!config) return { enabled: false };
@@ -246,17 +247,14 @@ main.main-surface:has(textarea:focus) .mp-wallpaper-motion{opacity:.26}
   const ensureStage = () => {
     if (disposed) return null;
     if (stage && mainEl && mainEl.isConnected && stage.parentElement === mainEl) return stage;
-    const main = document.querySelector('main.main-surface') || document.querySelector('main');
+    const main = window.__CODEX_THEME_STUDIO_STATE__?.findMain?.() ?? resolveMain();
     if (!main) return null;
+    // Keep native geometry intact; unsupported layouts retain theme paint only.
+    if (getComputedStyle(main).position === 'static') return null;
     stage?.remove();
     mainEl = main;
     layerRefs = null;
     ensureStyle();
-    if (getComputedStyle(main).position === 'static') {
-      mainPosition = main.style.position;
-      main.style.position = 'relative';
-      main.dataset.mpPosition = 'true';
-    }
     if (mainIsolation === null) mainIsolation = main.style.isolation;
     main.style.isolation = 'isolate';
     main.classList.add('mp-stage-parent');

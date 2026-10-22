@@ -18,8 +18,8 @@
 #${ID} .cts-switch-title{display:flex;align-items:center;justify-content:space-between;padding:3px 6px 9px;color:#96a7ba;font-size:10px;font-weight:750;letter-spacing:.12em}
 #${ID} .cts-switch-list{display:grid;gap:4px;max-height:260px;overflow:auto}
 #${ID} .cts-switch-item,#${ID} .cts-switch-action{width:100%;padding:8px 10px;border:0;border-radius:9px;background:transparent;color:#edf4f8;text-align:left;cursor:pointer;font-size:12px}
-#${ID} .cts-switch-item:hover,#${ID} .cts-switch-item[aria-current="true"],#${ID} .cts-switch-action:hover{background:#72e6ff18}
-#${ID} .cts-switch-item[aria-current="true"]{color:#8eeaff;font-weight:700}
+#${ID} .cts-switch-item:hover,#${ID} .cts-switch-item[aria-current="true"],#${ID} .cts-switch-item[aria-pressed="true"],#${ID} .cts-switch-action:hover{background:#72e6ff18}
+#${ID} .cts-switch-item[aria-current="true"],#${ID} .cts-switch-item[aria-pressed="true"]{color:#8eeaff;font-weight:700}
 #${ID} .cts-switch-footer{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:7px;padding-top:7px;border-top:1px solid #ffffff16}
 #${ID} .cts-switch-action{color:#b9c7d6;text-align:center}.cts-switch-error{padding:7px;color:#ffabab;font-size:11px}
 #${ID}[data-mirror] .cts-switch-button{border-radius:50%;color:var(--mp-accent,#2380bc);background:var(--mp-panel,#eff8ff);border-color:currentColor;box-shadow:0 0 0 3px color-mix(in srgb,currentColor,transparent 90%),0 5px 20px #0003;position:relative;font-size:19px;transition:color 2.6s ease,background-color 2.6s ease,box-shadow 2.6s ease}
@@ -36,7 +36,7 @@ html[data-mirror-phase=breach] #${ID} .cts-mirror-symbol{transition-delay:0s}
 #${ID}[data-mirror] .cts-switch-panel{background:linear-gradient(145deg,var(--mp-ui-elevated,var(--mp-panel)),var(--mp-panel));color:var(--mp-ink);border-color:var(--mp-border);box-shadow:0 22px 64px var(--mp-ui-shadow,#0008),inset 0 1px color-mix(in srgb,var(--mp-ui-sheen,#fff) 18%,transparent)}
 #${ID}[data-mirror] .cts-switch-title,#${ID}[data-mirror] .cts-switch-action{color:var(--mp-muted)}
 #${ID}[data-mirror] .cts-switch-item{color:var(--mp-ink)}
-#${ID}[data-mirror] .cts-switch-item:hover,#${ID}[data-mirror] .cts-switch-item[aria-current=true],#${ID}[data-mirror] .cts-switch-action:hover{background:var(--mp-ui-selected,color-mix(in srgb,var(--mp-accent),transparent 90%));color:var(--mp-ink)}
+#${ID}[data-mirror] .cts-switch-item:hover,#${ID}[data-mirror] .cts-switch-item[aria-current=true],#${ID}[data-mirror] .cts-switch-item[aria-pressed=true],#${ID}[data-mirror] .cts-switch-action:hover{background:var(--mp-ui-selected,color-mix(in srgb,var(--mp-accent),transparent 90%));color:var(--mp-ink)}
 `;
   (document.head || document.documentElement).appendChild(style);
   const root = document.createElement("div");
@@ -85,24 +85,40 @@ html[data-mirror-phase=breach] #${ID} .cts-mirror-symbol{transition-delay:0s}
   const updateMirrorButton = () => {
     const api = window.__MIRROR_PROTOCOL__;
     const id = mirrorId();
-    const active = Boolean(api || ['deepseek-blue','deepseek-night','longmarch-black'].includes(id));
+    const active = Boolean(api || ['mirror-protocol-auto','deepseek-blue','deepseek-night','longmarch-black'].includes(id));
     if(['deepseek-blue','deepseek-night'].includes(id))deepseekTheme=id;
     const heading=active?'MIRROR / CONTROL':'CODEX THEMES';if(titleText.textContent!==heading)titleText.textContent=heading;
     if (!active) { delete root.dataset.mirror;delete root.dataset.mirrorBase;setMirrorSymbol(false); button.title='切换 Codex 主题'; button.setAttribute('aria-label','切换 Codex 主题 / Switch Codex theme'); return; }
     const state=api?.snapshot();
     const mode=state?(state.mode==='red'?'red':state.appearance==='night'?'night':'blue'):(id==='longmarch-black'?'red':id==='deepseek-night'?'night':'blue');
     root.dataset.mirror=mode;root.dataset.mirrorBase=state?(state.appearance==='night'?'night':'day'):(deepseekTheme==='deepseek-night'?'night':'day');setMirrorSymbol(true);
-    button.title=`镜面切换 · ${state?.automatic?'自动频段':'手动锁定'} · 点击切换${mode==='red'?(state?.appearance==='night'?'DeepSeek 夜间':'DeepSeek'):'黑红'}；右键、Shift+点击或 ↓ 打开自动与日夜菜单`;
-    button.setAttribute('aria-label',`镜面切换：当前${mode==='red'?'黑红':mode==='night'?'深蓝夜间':'蓝白'}，切换为${mode==='red'?(state?.appearance==='night'?'深蓝夜间':'DeepSeek'):'黑红'}`);
+    button.title=`镜面切换 · ${state?.automatic?'自动频段':'手动锁定'} · 点击切换${mode==='red'?(state?.appearance==='night'?'DeepSeek 夜间':'DeepSeek 日间'):'黑红'}；右键、Shift+点击或 ↓ 选择 DeepSeek 日间 / 夜间与自动模式`;
+    button.setAttribute('aria-label',`镜面切换：当前${mode==='red'?'黑红':mode==='night'?'深蓝夜间':'蓝白'}，切换为${mode==='red'?(state?.appearance==='night'?'深蓝夜间':'DeepSeek 日间'):'黑红'}；右键、Shift+点击或向下键选择日间和夜间`);
   };
   const render = async () => {
     try {
       const data = await request("themes"); list.replaceChildren();
       const state=window.__MIRROR_PROTOCOL__?.snapshot();
       current.textContent=root.dataset.mirror?(state?.automatic?'AUTO':root.dataset.mirror==='red'?'RED / LOCK':root.dataset.mirror==='night'?'NIGHT / LOCK':'BLUE / LOCK'):(data.activeTheme || "NATIVE");
+      if(window.__MIRROR_PROTOCOL__ || ['mirror-protocol-auto','deepseek-blue','deepseek-night','longmarch-black'].includes(mirrorId())) {
+        const baseMode=state?(state.appearance==='night'?'night':'blue'):(mirrorId()==='deepseek-night'?'night':mirrorId()==='deepseek-blue'?'blue':null);
+        for (const [mode,label] of [['blue','☀ DeepSeek 日间'],['night','☾ DeepSeek 夜间']]) {
+          const appearance=document.createElement('button');appearance.type='button';appearance.className='cts-switch-item';appearance.textContent=label;
+          appearance.setAttribute('aria-pressed',String(mode===baseMode));
+          appearance.title=`${label} · 手动锁定`;
+          appearance.addEventListener('click',async()=>{
+            appearance.disabled=true;panel.hidden=true;button.setAttribute('aria-expanded','false');
+            try {
+              const api=window.__MIRROR_PROTOCOL__;
+              if(api)api.choose(mode);
+              else {await request('switch',{theme:mode==='night'?'deepseek-night':'deepseek-blue'});await render();}
+              updateMirrorButton();
+            } catch(error) {panel.hidden=false;button.setAttribute('aria-expanded','true');showError(error);}
+            finally {appearance.disabled=false;}
+          });list.append(appearance);
+        }
+      }
       if(window.__MIRROR_PROTOCOL__) {
-        const appearance=document.createElement('button');appearance.type='button';appearance.className='cts-switch-item';appearance.textContent=state?.appearance==='night'?'☀ DeepSeek 日间模式':'☾ DeepSeek 夜间模式';
-        appearance.addEventListener('click',()=>{panel.hidden=true;button.setAttribute('aria-expanded','false');window.__MIRROR_PROTOCOL__?.choose(state?.appearance==='night'?'blue':'night');updateMirrorButton();});list.append(appearance);
         const auto=document.createElement('button'); auto.type='button'; auto.className='cts-switch-item'; auto.textContent='⌁ 恢复自动 · 低频随机入侵';
         auto.addEventListener('click',()=>{panel.hidden=true;button.setAttribute('aria-expanded','false');window.__MIRROR_PROTOCOL__?.resume();updateMirrorButton();}); list.append(auto);
       }

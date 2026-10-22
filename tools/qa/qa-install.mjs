@@ -26,7 +26,7 @@ try {
   const clone = path.join(scratch, 'clean-source'), cleanRoot = path.join(scratch, 'clean-installed');
   await fs.mkdir(path.join(clone, 'tools'), { recursive: true });await fs.mkdir(path.join(clone, 'previews'));
   for (const relative of ['LICENSE','ASSET-LICENSE.md','THIRD_PARTY_NOTICES.md','INSTALL.md','Transition.html']) await fs.copyFile(path.join(source,relative),path.join(clone,relative));
-  for (const relative of ['install.mjs','uninstall.mjs','mirror.mjs','installer-common.mjs','activate-after-exit.mjs','launch-activation.mjs','build-theme.mjs','build-title-motion.mjs','surface-design.mjs']) await fs.copyFile(path.join(source,'tools',relative),path.join(clone,'tools',relative));
+  for (const relative of ['install.mjs','uninstall.mjs','mirror.mjs','installer-common.mjs','attach-theme.mjs','activate-after-exit.mjs','launch-activation.mjs','build-theme.mjs','build-title-motion.mjs','surface-design.mjs']) await fs.copyFile(path.join(source,'tools',relative),path.join(clone,'tools',relative));
   await fs.cp(path.join(source,'assets'),path.join(clone,'assets'),{recursive:true});
   await fs.cp(path.join(source,'runtime'),path.join(clone,'runtime'),{recursive:true,filter:filename=>!path.relative(path.join(source,'runtime'),filename).split(path.sep).includes('themes')});
   const clean = spawnSync(process.execPath,[path.join(clone,'tools/install.mjs'),'--root',cleanRoot],{cwd:clone,encoding:'utf8',windowsHide:true});assert.equal(clean.status,0,clean.stderr);assert.equal(JSON.parse(clean.stdout).themes.length,4);

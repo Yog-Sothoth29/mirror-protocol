@@ -33,6 +33,70 @@ export const surfacePalettes = {
   },
 };
 
+// Codex 26.1016 uses separate neutral component tokens even when its official
+// data-theme remains dark. Bridge paint tokens without changing settings.
+// Semantic fills/variants stay native; basic status text keeps its palette hue.
+function modernNeutralTokens(p) {
+  const values = {};
+  const set = (names, value) => { for (const name of names.split(/\s+/).filter(Boolean)) values[name] = value; };
+  set(`--color-text-primary --color-text-foreground --color-text-prose --color-text-emphasis
+    --color-text-user-message --user-message-text-color --input-text-color
+    --color-text-button-outline --color-text-mode-toggle-primary
+    --color-text-activity-control-active`, p.ink);
+  set(`--color-text-secondary --color-text-tertiary --color-text-disabled
+    --color-text-toolbar-action --color-text-mode-toggle-inactive
+    --color-text-activity-control --input-placeholder-text-color`, p.muted);
+  for (const variant of ['ghost','ghost-hover','outline','outline-hover','soft','soft-alt','surface']) {
+    set(`--color-text-primary-${variant}`, p.ink);
+    set(`--color-text-secondary-${variant}`, variant.endsWith('hover') ? p.ink : p.muted);
+  }
+  set('--color-text-primary-solid --color-text-composer-primary --color-text-accent-action --color-text-inverse', p.accentInk);
+  set('--color-text-secondary-solid', p.ink);
+  set('--color-text-composer-reference --color-text-mode-toggle-accent --color-text-connected', p.accent);
+  set('--color-text-execution-output --color-text-execution-traceback', p.codeInk);
+  set('--color-text-execution-output-label', p.muted);
+  // Keep the green/amber/red meaning while making basic status text readable
+  // on this mode's neutral surfaces. Solid actions and semantic fills stay native.
+  set('--color-text-success', p.success);
+  set('--color-text-warning', p.warning);
+  set('--color-text-danger', p.error);
+  set('--color-text-tooltip --color-text-tooltip-classic --color-text-tooltip-shortcut', p.ink);
+  set('--color-text-tooltip-secondary --color-text-tooltip-tertiary --color-text-tooltip-description', p.muted);
+
+  set('--color-background-surface --color-background-surface-primary', `var(--mp-canvas,${p.panel})`);
+  set('--color-background-surface-under', p.sidebar);
+  set('--color-background-surface-secondary --color-background-panel --color-background-elevated-secondary', p.panel);
+  set('--color-background-elevated-primary --color-background-control-opaque --color-background-page-search --color-background-viewer-control', p.elevated);
+  set('--color-background-composer-surface --color-background-activity-input --input-soft-background-color', p.input);
+  set('--color-background-composer-action-bar --color-background-activity-control', p.toolbar);
+  set('--color-background-composer-primary --color-background-accent-action', p.accent);
+  set('--color-background-execution-output --color-background-execution-traceback --color-background-artifact-preview', p.code);
+  set('--color-background-user-message --color-background-other-user-message --user-message-background-color', p.selected);
+  set('--color-background-user-message-compact --color-background-message-reaction', p.inputEnd);
+  set('--color-background-tooltip --color-background-tooltip-classic --color-background-callout-surface', p.elevated);
+  set('--color-background-tooltip-shortcut --color-background-mode-toggle-track --color-background-segmented-form-track --color-background-disabled', p.toolbar);
+  set('--color-background-mode-toggle-selected --color-background-segmented-form-selected --color-background-segmented-selected --color-background-text-selection --color-background-attribution-highlight', p.selected);
+  set('--color-background-button-outline-hover --color-background-home-suggestion-hover --color-background-segmented-selected-hover --color-background-activity-control-hover --color-background-activity-stop-hover', p.hover);
+  for (const family of ['primary','secondary']) {
+    for (const suffix of ['ghost-hover','ghost-focus','outline-hover','soft-hover','soft-alpha-hover']) set(`--color-background-${family}-${suffix}`, p.hover);
+    for (const suffix of ['ghost-active','outline-active','soft-active','soft-alpha-active']) set(`--color-background-${family}-${suffix}`, p.selected);
+    set(`--color-background-${family}-soft`, p.input);
+    set(`--color-background-${family}-soft-alpha --color-background-${family}-soft-alt`, p.toolbar);
+    set(`--color-background-${family}-surface`, p.panel);
+    for (const suffix of ['solid','solid-hover','solid-active']) set(`--color-background-${family}-${suffix}`, family === 'primary' ? p.accent : p.toolbar);
+    set(`--color-border-${family}-outline`, p.border);
+    set(`--color-border-${family}-outline-hover`, p.accent);
+    set(`--color-border-${family}-soft-alt --color-border-${family}-surface`, p.subtle);
+  }
+  set('--color-border --color-border-strong --color-border-overlay --color-border-button-outline --input-outline-border-color', p.border);
+  set('--color-border-secondary --color-border-subtle --color-border-disabled --color-border-tooltip --color-border-tooltip-classic --color-border-mode-toggle-selected --button-surface-border-color', p.subtle);
+  set('--color-border-focus --input-outline-border-color-focus --input-outline-border-color-hover --input-soft-border-color-focus', p.accent);
+  set('--button-surface-shadow', `0 2px 8px ${p.shadow}`);
+  set('--app-shell-sidebar-popover-background', p.elevated);
+  set('--app-shell-sidebar-popover-border', p.border);
+  return Object.entries(values).map(([name,value]) => `${name}:${value}!important;`).join('\n ');
+}
+
 export function generateSurfaceCss(mode, scope) {
   const p=surfacePalettes[mode], red=mode==='red', light=mode==='blue';
   const tokens=Object.entries(p).map(([key,value])=>`--mp-ui-${key.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())}:${value};`).join('');
@@ -40,6 +104,7 @@ export function generateSurfaceCss(mode, scope) {
 /* Mirror Protocol 2.1: independent canvas, navigation, content, input, overlay and code surfaces. */
 ${scope} {
  ${tokens}
+ ${modernNeutralTokens(p)}
  --mp-panel:${p.panel};--mp-muted:${p.muted};--mp-border:${p.border};--mp-support:${p.support};
  --color-token-side-bar-background:${p.sidebar}!important;
  --color-token-input-background:${p.input}!important;
@@ -65,9 +130,20 @@ ${scope} aside.app-shell-left-panel {
  background:radial-gradient(ellipse at 0% 0%,${p.support}15,transparent 60%),linear-gradient(165deg,${p.sidebar},${p.sidebarEnd})!important;
  border-color:${p.subtle}!important;box-shadow:inset -1px 0 ${p.sheen}${light?'aa':'0c'}!important;
 }
-${scope} :is(header.appbar,[data-app-shell-tabs="true"]) {
+${scope} :is(header.appbar,[data-app-shell-tabs="true"],header[data-app-shell-application-menu-bar],[data-app-shell-main-titlebar]) {
  background:linear-gradient(90deg,${p.sidebar}${light?'e8':'e8'},${p.panel}${light?'a0':'cc'})!important;
  border-color:${p.subtle}!important;
+}
+/* The current native fades contain dark paint outside the main background.
+   Replace only their paint, preserving native geometry and hit behavior. */
+${scope} main [class*="_MainContentTopFade_"] {
+ background-image:linear-gradient(to bottom,var(--mp-canvas,${p.panel}),transparent)!important;
+}
+${scope} [data-thread-scroll-footer] [class*="_fade_"] {
+ background-image:linear-gradient(to top,var(--mp-canvas,${p.panel}) 0%,transparent 100%)!important;
+}
+${scope} [data-thread-scroll-footer] [class*="_surface_"] {
+ background-color:var(--mp-canvas,${p.panel})!important;
 }
 ${scope} aside :is(button,a):hover,${scope} [role="menuitem"]:hover {
  background-color:${p.hover}!important;color:${p.ink}!important;

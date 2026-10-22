@@ -77,6 +77,7 @@ async function safeFile(filename) {
 }
 
 async function main() {
+  throw new Error('The custom exit/relaunch helper is disabled. Keep Codex open and use mirror.mjs use with an existing loopback endpoint.');
   requireNode();
   const { root, args } = takeRoot(process.argv.slice(2));
   let timeoutMs = 600000;

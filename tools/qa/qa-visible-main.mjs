@@ -1,0 +1,35 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { isAuxiliaryTarget, readinessExpression, visibleMain } from '../../runtime/scripts/page-policy.mjs';
+import { verifyExpression } from '../../runtime/scripts/runtime.mjs';
+const require = createRequire(import.meta.url);
+const { chromium } = require(process.env.MIRROR_PLAYWRIGHT || 'playwright');
+const browser = await chromium.launch({channel: 'msedge', headless: true});
+try {
+  const page = await browser.newPage({viewport: {width: 1400, height: 900}});
+  const fixture = `<!doctype html><style>body{margin:0}main{width:100vw;height:100vh;position:relative}.invisible{visibility:hidden;position:fixed;inset:0}.cts-decoration-card{display:none}#codex-theme-studio-decorations{pointer-events:none}#real{background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E")}</style><body><div class="invisible"><main id="login"><button>Hidden login</button></main></div><main id="real" class="_MainContentSurface_fixture_2">${Array.from({length:6},(_,i)=>'<button>Native '+i+'</button>').join('')}</main></body>`;
+  await page.setContent(fixture);
+  assert.equal(await page.evaluate(`(${visibleMain.toString()})()?.id`), 'real');
+  assert.equal((await page.evaluate(readinessExpression)).ready, true);
+  const theme = {id:'qa-theme',version:'2.3.4',hasArt:true,decorations:{sidebarWidget:{enabled:false},cornerCard:{enabled:false}}};
+  const template = await fs.readFile(new URL('../../runtime/assets/renderer-inject.js',import.meta.url),'utf8');
+  const expression = template.replace('__CTS_CSS_JSON__',JSON.stringify('')).replace('__CTS_ART_JSON__',JSON.stringify('')).replace('__CTS_THEME_JSON__',JSON.stringify(theme)).replace('__CTS_USAGE_JSON__','null');
+  await page.evaluate(expression);
+  assert.equal(await page.evaluate(()=>__CODEX_THEME_STUDIO_STATE__.findMain()?.id),'real');
+  await page.evaluate(()=>{const switcher=document.createElement('div');switcher.id='codex-theme-studio-switcher';switcher.hidden=true;switcher.innerHTML='<button class="cts-switch-button" aria-label="Theme"></button>';document.body.append(switcher);});
+  const verified = await page.evaluate(verifyExpression(theme,false));
+  assert.equal(verified.backgroundHasArt,true); assert.equal(verified.pass,true,JSON.stringify(verified));
+  await page.evaluate(()=>document.getElementById('real').style.visibility='hidden');
+  assert.equal((await page.evaluate(readinessExpression)).ready,false);
+  assert.equal((await page.evaluate(verifyExpression(theme,false))).pass,false);
+  await page.evaluate(()=>window.__CODEX_THEME_STUDIO_STATE__.cleanup());
+  assert.equal(await page.evaluate(()=>Boolean(document.querySelector('#codex-theme-studio-style,#codex-theme-studio-decorations')||window.__CODEX_THEME_STUDIO_STATE__)),false);
+  await page.setContent('<!doctype html><main></main>');
+  assert.equal((await page.evaluate(readinessExpression)).ready,false);
+  assert.equal(isAuxiliaryTarget({url:'app://-/detached-window.html'}),true);
+  assert.equal(isAuxiliaryTarget({url:'app://-/index.html'}),false);
+  const report={pass:true,hiddenFirstMainIgnored:true,rendererAndVerifierAgree:true,hiddenUiRejected:true,emptyShellRejected:true,cleanup:true,auxiliaryExcluded:true,fixtureOnly:true};
+  await fs.writeFile(new URL('../../docs/qa/visible-main-report.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
+  console.log(JSON.stringify(report));
+} finally {await browser.close();}

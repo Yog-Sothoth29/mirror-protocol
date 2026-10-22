@@ -12,10 +12,11 @@ const argv = process.argv.slice(2);
 const command = argv[0] ?? "help";
 const jsonOutput = argv.includes("--json");
 const restartExisting = argv.includes("--restart-existing");
+if (restartExisting || argv.includes('--profile-path')) throw new Error('Custom restarts and profile overrides are disabled. Only an existing native Codex endpoint can be themed.');
 const appPathIndex = argv.indexOf("--app-path");
 const appPath = appPathIndex >= 0 ? argv[appPathIndex + 1] : null;
 if (appPathIndex >= 0 && (!appPath || appPath.startsWith("--"))) throw new Error("--app-path requires an executable path");
-const startOptions = [...(restartExisting ? ["--restart-existing"] : []), ...(appPath ? ["--app-path", appPath] : [])];
+const startOptions = ["--attach-only", ...(appPath ? ["--app-path", appPath] : [])];
 
 async function state() { try { return JSON.parse(await fs.readFile(statePath, "utf8")); } catch { return {}; } }
 
@@ -125,6 +126,6 @@ if (command === "list") {
   studio                        Open the HTML studio (compatibility alias)
 
 Options:
-  --restart-existing            Allow one graceful Codex restart
+  --attach-only                 Use an existing endpoint; never launch the app
   --app-path <executable>       Use a signed ChatGPT.exe or Codex.exe`);
 }

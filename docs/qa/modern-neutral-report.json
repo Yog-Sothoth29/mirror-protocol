@@ -1,0 +1,472 @@
+{
+  "pass": true,
+  "modes": [
+    {
+      "mode": "blue",
+      "computed": {
+        "theme": "dark",
+        "prose": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(32, 51, 76)"
+        },
+        "bubble": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgb(220, 232, 250)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "output": {
+          "color": "rgb(38, 54, 83)",
+          "background": "rgb(237, 241, 250)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "composer": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgb(248, 250, 255)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "actionbar": {
+          "color": "rgb(82, 98, 126)",
+          "background": "rgb(230, 237, 249)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "input": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgb(248, 250, 255)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "send": {
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(50, 108, 178)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "selected": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgb(220, 232, 250)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "menu": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(145deg, rgb(252, 253, 255), rgb(255, 255, 255))",
+          "border": "rgb(175, 190, 216)"
+        },
+        "menuitem": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgb(240, 240, 240)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "toolbar": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(90deg, rgba(232, 238, 249, 0.91), rgba(255, 255, 255, 0.627))",
+          "border": "rgb(203, 213, 232)"
+        },
+        "topFade": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(rgb(244, 249, 255), rgba(0, 0, 0, 0))",
+          "border": "rgb(32, 51, 76)"
+        },
+        "bottomFade": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(to top, rgb(244, 249, 255) 0%, rgba(0, 0, 0, 0) 100%)",
+          "border": "rgb(32, 51, 76)"
+        },
+        "footerSurface": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgb(244, 249, 255)",
+          "image": "none",
+          "border": "rgb(32, 51, 76)"
+        },
+        "sidebarPopover": {
+          "color": "rgb(32, 51, 76)",
+          "background": "rgb(252, 253, 255)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "variants": {
+          "ghost": {
+            "color": "rgb(32, 51, 76)",
+            "background": "rgb(226, 234, 247)",
+            "image": "none",
+            "border": "rgb(175, 190, 216)"
+          },
+          "outline": {
+            "color": "rgb(32, 51, 76)",
+            "background": "rgb(226, 234, 247)",
+            "image": "none",
+            "border": "rgb(175, 190, 216)"
+          },
+          "soft": {
+            "color": "rgb(32, 51, 76)",
+            "background": "rgb(248, 250, 255)",
+            "image": "none",
+            "border": "rgb(175, 190, 216)"
+          },
+          "surface": {
+            "color": "rgb(32, 51, 76)",
+            "background": "rgb(255, 255, 255)",
+            "image": "none",
+            "border": "rgb(175, 190, 216)"
+          },
+          "solid": {
+            "color": "rgb(255, 255, 255)",
+            "background": "rgb(50, 108, 178)",
+            "image": "none",
+            "border": "rgb(175, 190, 216)"
+          }
+        },
+        "danger": {
+          "color": "rgb(173, 64, 92)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(173, 64, 92)"
+        },
+        "success": {
+          "color": "rgb(39, 113, 77)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(39, 113, 77)"
+        },
+        "warning": {
+          "color": "rgb(129, 92, 25)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(129, 92, 25)"
+        },
+        "dangerSolid": {
+          "color": "rgb(0, 0, 0)",
+          "background": "rgb(224, 46, 42)",
+          "image": "none",
+          "border": "rgb(175, 190, 216)"
+        },
+        "invalid": "#ba2623",
+        "overflow": false
+      },
+      "minimumContrast": 5.23792075697278
+    },
+    {
+      "mode": "night",
+      "computed": {
+        "theme": "dark",
+        "prose": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(228, 239, 255)"
+        },
+        "bubble": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgb(38, 63, 96)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "output": {
+          "color": "rgb(212, 226, 250)",
+          "background": "rgb(11, 20, 37)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "composer": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgb(27, 44, 72)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "actionbar": {
+          "color": "rgb(166, 182, 207)",
+          "background": "rgb(38, 51, 78)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "input": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgb(27, 44, 72)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "send": {
+          "color": "rgb(11, 32, 53)",
+          "background": "rgb(131, 201, 255)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "selected": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgb(38, 63, 96)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "menu": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(145deg, rgb(32, 45, 73), rgb(21, 36, 59))",
+          "border": "rgb(82, 105, 140)"
+        },
+        "menuitem": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgb(240, 240, 240)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "toolbar": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(90deg, rgba(14, 25, 45, 0.91), rgba(21, 36, 59, 0.8))",
+          "border": "rgb(53, 73, 103)"
+        },
+        "topFade": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(rgb(8, 19, 34), rgba(0, 0, 0, 0))",
+          "border": "rgb(228, 239, 255)"
+        },
+        "bottomFade": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(to top, rgb(8, 19, 34) 0%, rgba(0, 0, 0, 0) 100%)",
+          "border": "rgb(228, 239, 255)"
+        },
+        "footerSurface": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgb(8, 19, 34)",
+          "image": "none",
+          "border": "rgb(228, 239, 255)"
+        },
+        "sidebarPopover": {
+          "color": "rgb(228, 239, 255)",
+          "background": "rgb(32, 45, 73)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "variants": {
+          "ghost": {
+            "color": "rgb(228, 239, 255)",
+            "background": "rgb(38, 52, 79)",
+            "image": "none",
+            "border": "rgb(82, 105, 140)"
+          },
+          "outline": {
+            "color": "rgb(228, 239, 255)",
+            "background": "rgb(38, 52, 79)",
+            "image": "none",
+            "border": "rgb(82, 105, 140)"
+          },
+          "soft": {
+            "color": "rgb(228, 239, 255)",
+            "background": "rgb(27, 44, 72)",
+            "image": "none",
+            "border": "rgb(82, 105, 140)"
+          },
+          "surface": {
+            "color": "rgb(228, 239, 255)",
+            "background": "rgb(21, 36, 59)",
+            "image": "none",
+            "border": "rgb(82, 105, 140)"
+          },
+          "solid": {
+            "color": "rgb(11, 32, 53)",
+            "background": "rgb(131, 201, 255)",
+            "image": "none",
+            "border": "rgb(82, 105, 140)"
+          }
+        },
+        "danger": {
+          "color": "rgb(244, 160, 178)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(244, 160, 178)"
+        },
+        "success": {
+          "color": "rgb(145, 214, 180)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(145, 214, 180)"
+        },
+        "warning": {
+          "color": "rgb(231, 193, 130)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(231, 193, 130)"
+        },
+        "dangerSolid": {
+          "color": "rgb(0, 0, 0)",
+          "background": "rgb(224, 46, 42)",
+          "image": "none",
+          "border": "rgb(82, 105, 140)"
+        },
+        "invalid": "#ba2623",
+        "overflow": false
+      },
+      "minimumContrast": 6.130759751439654
+    },
+    {
+      "mode": "red",
+      "computed": {
+        "theme": "dark",
+        "prose": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(241, 239, 245)"
+        },
+        "bubble": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgb(81, 39, 56)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "output": {
+          "color": "rgb(230, 223, 233)",
+          "background": "rgb(16, 15, 24)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "composer": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgb(43, 32, 44)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "actionbar": {
+          "color": "rgb(194, 175, 192)",
+          "background": "rgb(53, 37, 49)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "input": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgb(43, 32, 44)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "send": {
+          "color": "rgb(38, 14, 24)",
+          "background": "rgb(251, 113, 133)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "selected": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgb(81, 39, 56)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "menu": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(145deg, rgb(48, 37, 48), rgb(32, 27, 37))",
+          "border": "rgb(121, 82, 96)"
+        },
+        "menuitem": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgb(240, 240, 240)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "toolbar": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(90deg, rgba(17, 16, 23, 0.91), rgba(32, 27, 37, 0.8))",
+          "border": "rgb(72, 51, 62)"
+        },
+        "topFade": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(rgb(11, 12, 20), rgba(0, 0, 0, 0))",
+          "border": "rgb(241, 239, 245)"
+        },
+        "bottomFade": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "linear-gradient(to top, rgb(11, 12, 20) 0%, rgba(0, 0, 0, 0) 100%)",
+          "border": "rgb(241, 239, 245)"
+        },
+        "footerSurface": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgb(11, 12, 20)",
+          "image": "none",
+          "border": "rgb(241, 239, 245)"
+        },
+        "sidebarPopover": {
+          "color": "rgb(241, 239, 245)",
+          "background": "rgb(48, 37, 48)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "variants": {
+          "ghost": {
+            "color": "rgb(241, 239, 245)",
+            "background": "rgb(56, 34, 45)",
+            "image": "none",
+            "border": "rgb(121, 82, 96)"
+          },
+          "outline": {
+            "color": "rgb(241, 239, 245)",
+            "background": "rgb(56, 34, 45)",
+            "image": "none",
+            "border": "rgb(121, 82, 96)"
+          },
+          "soft": {
+            "color": "rgb(241, 239, 245)",
+            "background": "rgb(43, 32, 44)",
+            "image": "none",
+            "border": "rgb(121, 82, 96)"
+          },
+          "surface": {
+            "color": "rgb(241, 239, 245)",
+            "background": "rgb(32, 27, 37)",
+            "image": "none",
+            "border": "rgb(121, 82, 96)"
+          },
+          "solid": {
+            "color": "rgb(38, 14, 24)",
+            "background": "rgb(251, 113, 133)",
+            "image": "none",
+            "border": "rgb(121, 82, 96)"
+          }
+        },
+        "danger": {
+          "color": "rgb(255, 158, 174)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(255, 158, 174)"
+        },
+        "success": {
+          "color": "rgb(162, 212, 188)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(162, 212, 188)"
+        },
+        "warning": {
+          "color": "rgb(237, 198, 145)",
+          "background": "rgba(0, 0, 0, 0)",
+          "image": "none",
+          "border": "rgb(237, 198, 145)"
+        },
+        "dangerSolid": {
+          "color": "rgb(0, 0, 0)",
+          "background": "rgb(224, 46, 42)",
+          "image": "none",
+          "border": "rgb(121, 82, 96)"
+        },
+        "invalid": "#ba2623",
+        "overflow": false
+      },
+      "minimumContrast": 6.7355514688415585
+    }
+  ],
+  "preservedOfficialTheme": true,
+  "fixtureOnly": true
+}

@@ -91,7 +91,10 @@ try {
   assert.match(cli, /theme\.mjs create <agent\|html>/);
   assert.match(cli, /opensHtml: false/);
   assert.match(cli, /opensHtml: true/);
-  assert.match(runtime, /\/avatar-overlay/);
+  const { isAuxiliaryTarget } = await import('./page-policy.mjs');
+  assert.equal(isAuxiliaryTarget({url:'app://-/index.html?initialRoute=/avatar-overlay'}), true);
+  assert.equal(isAuxiliaryTarget({url:'app://-/detached-window.html'}), true);
+  assert.equal(isAuxiliaryTarget({url:'app://-/index.html'}), false);
   assert.match(runtime, /handleBridgeRequest/);
   assert.match(runtime, /closeAllConnections/);
   assert.match(runtime, /CodexUsageProvider/);

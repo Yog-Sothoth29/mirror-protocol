@@ -6,8 +6,9 @@ import path from "node:path";
 import { spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { loadTheme } from "./theme-core.mjs";
-import { findBundledCodex, findOfficialApp, officialAppPids, requestOfficialAppQuit, securePrivateDirectory, securePrivateFile, statePathFor, stateRootFor } from "./platform-runtime.mjs";
+import { findBundledCodex, findOfficialApp, securePrivateDirectory, securePrivateFile, statePathFor, stateRootFor } from "./platform-runtime.mjs";
 import { stopThemeWatcher, stopThemeWatchers } from "./runtime-lifecycle.mjs";
+import { rollbackFailedActivation } from "./activation-safety.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const runtimePath = path.join(here, "runtime.mjs");
@@ -15,38 +16,29 @@ const stateRoot = stateRootFor();
 const statePath = statePathFor();
 
 function parseArgs(argv) {
-  const options = { theme: null, port: 9335, profilePath: null, appPath: null, restartExisting: false, foreground: false, screenshot: null };
+  const options = { theme: null, port: 9335, appPath: null, foreground: false, screenshot: null, verificationTimeoutMs: 30000 };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--theme") options.theme = argv[++index];
     else if (arg === "--port") options.port = Number(argv[++index]);
-    else if (arg === "--profile-path") options.profilePath = path.resolve(argv[++index]);
+    else if (arg === "--profile-path") throw new Error("Profile overrides are disabled. Mirror Protocol only attaches to an existing native Codex window.");
     else if (arg === "--app-path") options.appPath = path.resolve(argv[++index]);
-    else if (arg === "--restart-existing") options.restartExisting = true;
+    else if (arg === "--restart-existing") throw new Error("Custom app restarts are disabled. Use the codexthemes.ai switcher workflow with explicit restart authorization.");
+    else if (arg === "--attach-only") { /* All activation is attach-only. */ }
     else if (arg === "--foreground") options.foreground = true;
     else if (arg === "--screenshot") options.screenshot = path.resolve(argv[++index]);
+    else if (arg === "--verification-timeout-ms") options.verificationTimeoutMs = Number(argv[++index]);
     else throw new Error(`Unknown argument: ${arg}`);
   }
   if (!options.theme) throw new Error("--theme is required");
   if (!Number.isInteger(options.port) || options.port < 1024 || options.port > 65535) throw new Error("Invalid port");
+  if (!Number.isInteger(options.verificationTimeoutMs) || options.verificationTimeoutMs < 1000 || options.verificationTimeoutMs > 120000) throw new Error('Invalid verification timeout');
   return options;
 }
 
 async function cdpReady(port) {
-  try {
-    const response = await fetch(`http://127.0.0.1:${port}/json/list`, { signal: AbortSignal.timeout(900) });
-    if (!response.ok) return false;
-    return (await response.json()).some((item) => item.type === "page" && String(item.url).startsWith("app://"));
-  } catch { return false; }
-}
-
-async function waitReady(port, timeoutMs = 30000) {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    if (await cdpReady(port)) return;
-    await new Promise((resolve) => setTimeout(resolve, 400));
-  }
-  throw new Error(`Codex did not expose CDP on port ${port}`);
+  const result = spawnSync(process.execPath, [runtimePath, "--ready", "--port", String(port), "--timeout-ms", "1800"], { encoding: "utf8", timeout: 5000, windowsHide: true });
+  return result.status === 0;
 }
 
 function runRuntime(args, options = {}) {
@@ -64,16 +56,6 @@ async function freeLoopbackPort() {
   });
 }
 
-async function assertLoopbackPortAvailable(port) {
-  return new Promise((resolve, reject) => {
-    const server = net.createServer();
-    server.once("error", (error) => reject(error.code === "EADDRINUSE"
-      ? new Error(`Port ${port} is already in use by a non-Codex service`)
-      : error));
-    server.listen(port, "127.0.0.1", () => server.close((error) => error ? reject(error) : resolve()));
-  });
-}
-
 const options = parseArgs(process.argv.slice(2));
 const theme = await loadTheme(options.theme);
 const appearance = theme.manifest.appearance ?? {
@@ -88,36 +70,15 @@ console.log(JSON.stringify({
     ? "This theme is designed for dark appearance. Keep Codex in dark mode to avoid mixed native surfaces."
     : "This theme is designed for light appearance. Keep Codex in light mode to avoid mixed native surfaces.",
 }));
+const runtimeAlreadyReady = await cdpReady(options.port);
+if (!runtimeAlreadyReady) {
+  throw new Error("No existing Codex app page is available. Attach-only mode did not launch, close, restart, or change the profile of any application.");
+}
 await securePrivateDirectory(stateRoot);
 await stopThemeWatchers(runtimePath, options.port);
-
-const runtimeAlreadyReady = await cdpReady(options.port);
 let executable = null;
-if (!runtimeAlreadyReady) {
-  await assertLoopbackPortAvailable(options.port);
-  executable = await findOfficialApp({ explicitPath: options.appPath ?? process.env.CODEX_THEME_STUDIO_APP_PATH });
-  if (officialAppPids(executable).length && !options.profilePath && !options.restartExisting) {
-    throw new Error("Codex is already running without Theme Studio CDP. Close it or rerun with --restart-existing after explicit authorization.");
-  }
-  if (options.restartExisting && !options.profilePath && officialAppPids(executable).length) {
-    requestOfficialAppQuit(executable);
-    const deadline = Date.now() + 10000;
-    while (officialAppPids(executable).length && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 250));
-    if (officialAppPids(executable).length) throw new Error("Codex did not quit cleanly; refusing to force terminate it");
-  }
-  const appArgs = [`--remote-debugging-address=127.0.0.1`, `--remote-debugging-port=${options.port}`];
-  if (options.profilePath) {
-    await fs.mkdir(options.profilePath, { recursive: true });
-    appArgs.push(`--user-data-dir=${options.profilePath}`);
-  }
-  const log = await fs.open(path.join(stateRoot, "app.log"), "a");
-  const child = spawn(executable, appArgs, { detached: true, stdio: ["ignore", log.fd, log.fd] });
-  child.unref();
-  await waitReady(options.port);
-} else {
-  try { executable = await findOfficialApp({ explicitPath: options.appPath ?? process.env.CODEX_THEME_STUDIO_APP_PATH }); }
-  catch { /* Themes without a quota card remain usable. */ }
-}
+try { executable = await findOfficialApp({ explicitPath: options.appPath ?? process.env.CODEX_THEME_STUDIO_APP_PATH }); }
+catch { /* Themes without a quota card remain usable. */ }
 
 const controlPort = await freeLoopbackPort();
 const controlToken = crypto.randomBytes(32).toString("hex");
@@ -143,23 +104,41 @@ await fs.writeFile(statePath, `${JSON.stringify({
   controlPort,
   controlToken,
   managerUrl: `http://127.0.0.1:${controlPort}/#${controlToken}`,
-  profilePath: options.profilePath,
   startedAt: new Date().toISOString(),
 }, null, 2)}\n`, "utf8");
 await securePrivateFile(statePath);
 
 let verified = false;
-const verifyMode = options.profilePath ? "--smoke" : "--verify";
-for (let attempt = 0; attempt < 30; attempt += 1) {
+let lastVerification = null;
+const verifyMode = "--verify";
+const verificationDeadline = Date.now() + options.verificationTimeoutMs;
+while (Date.now() < verificationDeadline) {
   await new Promise((resolve) => setTimeout(resolve, 500));
   const args = [runtimePath, verifyMode, "--port", String(options.port), "--theme", theme.manifestPath, "--timeout-ms", "5000"];
-  const check = spawnSync(process.execPath, args, { stdio: "ignore", timeout: 7000 });
+  const check = spawnSync(process.execPath, args, { encoding: "utf8", timeout: 7000, windowsHide: true });
+  lastVerification = { exitCode: check.status, signal: check.signal, error: check.error?.message ?? null, stdout: String(check.stdout ?? "").slice(0, 24000), stderr: String(check.stderr ?? "").slice(0, 12000) };
   if (check.status === 0) { verified = true; break; }
 }
 if (!verified) {
-  await stopThemeWatcher(watcher.pid, runtimePath, options.port);
-  await fs.rm(statePath, { force: true });
-  throw new Error(`Theme was injected but live verification failed. See ${path.join(stateRoot, "watcher-error.log")}`);
+  const cleanup = await rollbackFailedActivation({
+    stopWatcher: () => stopThemeWatcher(watcher.pid, runtimePath, options.port),
+    removeTheme: async () => {
+      const result = spawnSync(process.execPath, [runtimePath, "--remove", "--port", String(options.port), "--timeout-ms", "4000"], { encoding: "utf8", timeout: 10000, windowsHide: true });
+      if (result.status !== 0) throw new Error("Renderer theme removal could not be confirmed after failed startup.");
+    },
+    clearState: () => fs.rm(statePath, { force: true }),
+  });
+  const diagnostics = path.join(stateRoot, "startup-verification.json");
+  await fs.writeFile(diagnostics, JSON.stringify({ theme: theme.manifest.id, port: options.port, failedAt: new Date().toISOString(), lastVerification, cleanup }, null, 2));
+  await securePrivateFile(diagnostics);
+  if (!cleanup.cleanupConfirmed) {
+    try {
+      const failedState = JSON.parse(await fs.readFile(statePath, "utf8"));
+      failedState.activeTheme = null; failedState.activationFailed = true; failedState.cleanupConfirmed = false;
+      await fs.writeFile(statePath, JSON.stringify(failedState, null, 2));
+    } catch { /* The independent diagnostic remains available. */ }
+  }
+  throw new Error(`Live verification failed; renderer cleanup confirmed: ${cleanup.cleanupConfirmed}. See ${diagnostics}`);
 }
 if (options.screenshot) {
   let captured = false;

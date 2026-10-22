@@ -30,12 +30,18 @@
 
   const visibleRect = (node) => {
     if (!(node instanceof Element)) return null;
-    const style = getComputedStyle(node);
-    if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return null;
+    for (let parent = node; parent; parent = parent.parentElement) {
+      const style = getComputedStyle(parent);
+      if (style.display === "none" || style.visibility === "hidden" || style.visibility === "collapse" || Number(style.opacity) === 0) return null;
+    }
     const rect = node.getBoundingClientRect();
     if (rect.width < 1 || rect.height < 1 || rect.bottom <= 0 || rect.right <= 0 || rect.top >= innerHeight || rect.left >= innerWidth) return null;
     return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height };
   };
+
+  const findMain = () => [...document.querySelectorAll('main.main-surface,main,[role="main"]')]
+    .filter(node => { const rect = visibleRect(node); return rect && rect.width > 100 && rect.height > 100; })
+    .sort((a, b) => Number(b.matches('main.main-surface,main[class*="_MainContentSurface_"]')) - Number(a.matches('main.main-surface,main[class*="_MainContentSurface_"]')))[0] ?? null;
 
   const expand = (rect, amount) => ({
     left: rect.left - amount, top: rect.top - amount, right: rect.right + amount, bottom: rect.bottom + amount,
@@ -263,7 +269,7 @@
       style.dataset.themeVersion = `${theme.id}@${theme.version}`;
     }
 
-    const main = document.querySelector("main.main-surface") || document.querySelector("main");
+    const main = findMain();
     if(main){const rect=main.getBoundingClientRect(),layout=rect.width<960||rect.width/Math.max(1,rect.height)<1.2?'half':'wide';if(root.dataset.codexThemeStudioLayout!==layout)root.dataset.codexThemeStudioLayout=layout;}
     else delete root.dataset.codexThemeStudioLayout;
     if(layoutObserver&&observedMain!==main){layoutObserver.disconnect();if(main)layoutObserver.observe(main);observedMain=main;}
@@ -330,7 +336,7 @@
   const resize = () => schedule();
   addEventListener("resize", resize, { passive: true });
   const timer = setInterval(ensure, 8000);
-  window[STATE_KEY] = { cleanup, ensure, updateUsage, usage: initialUsage, observer, layoutObserver, resize, timer, scheduler, artUrl, themeId: theme.id, themeVersion: theme.version };
+  window[STATE_KEY] = { cleanup, ensure, findMain, updateUsage, usage: initialUsage, observer, layoutObserver, resize, timer, scheduler, artUrl, themeId: theme.id, themeVersion: theme.version };
   ensure();
   return { installed: true, themeId: theme.id, version: theme.version };
 })(__CTS_CSS_JSON__, __CTS_ART_JSON__, __CTS_THEME_JSON__, __CTS_USAGE_JSON__)

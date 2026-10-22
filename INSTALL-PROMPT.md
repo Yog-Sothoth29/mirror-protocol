@@ -8,9 +8,9 @@ https://github.com/Yog-Sothoth29/mirror-protocol
 
 然后使用安装器返回的 mirror.mjs 入口，应用 mirror-protocol-auto。它包含 DeepSeek 日间/夜间、黑红长征机、手动正圆按钮和低频随机切换，并支持半屏。
 
-首次激活如果需要正常重启 Codex，请先说明并征得我的同意。不能强制结束进程、修改 WindowsApps/app.asar 或放宽 OpenAI 签名检查。若正常退出未成功，停止并提示我从应用菜单完整退出后再用安装入口启动，不要循环重启。
+本版仅连接已有 Codex 本机调试端口；没有端口时保留原生界面并报告。首次需要正常重启以启用端口时，使用 codexthemes.ai 的 codex-theme-switcher 官方流程，先说明并征得我的同意。不能强制结束进程、修改 WindowsApps/app.asar、指定其他 user-data-dir 或放宽 OpenAI 签名检查。
 
-如果我选择手动退出后自动启用，使用安装目录的 launch-activation.mjs，确认独立辅助进程身份与心跳后再提示我退出。不要直接从 Codex 中用 Start-Process 或 Node detached 启动等待脚本；旧 waiting 记录不能证明等待程序还活着。
+旧版退出后重开辅助已停用，不要运行旧启动器或自行编写重启脚本。attach-theme.mjs 只连接已有窗口。右键正圆徽章或 Shift+单击可明确选择 DeepSeek 日间和夜间。
 
 应用后检查 status、实机 verify 和截图；只有确认实际界面生效才能说安装成功。不要将独立浏览器预览当成实机验证。最后给我恢复原生外观和卸载命令。
 ```

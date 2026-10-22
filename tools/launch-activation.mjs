@@ -55,6 +55,7 @@ export async function verifyLaunch({ root, pid, expectedExecutable, expectedComm
 }
 
 async function main() {
+  throw new Error('The custom exit/relaunch helper is disabled. Keep Codex open and use mirror.mjs use with an existing loopback endpoint.');
   requireNode();
   const { root, args } = takeRoot(process.argv.slice(2));
   if (args.length) throw new Error('Usage: node launch-activation.mjs [--root directory]');

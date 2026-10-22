@@ -4,7 +4,7 @@ DeepSeek 蓝白日间 / 深蓝夜间，与黑红长征机之间的低频随机�
 
 ![镜面协议](docs/media/wechat-cover-900x383.png)
 
-**v2.3.3 · 实验性桌面主题。** 已在 Windows Store Codex 的真实聊天页验证背景图片和主题连接；首页、全部弹窗等状态仍需进一步实机检查。非 OpenAI、DeepSeek、TFR 或 CD Projekt Red 官方项目。
+**v2.3.4 · 实验性桌面主题。** 已停用自制重启和用户配置覆盖，仅连接现有 Codex 本机调试端口。旧版曾出现重复实例、验证失败后残留等问题；本版完成独立浏览器回归，尚未完成整套新版 Codex 实机验收。非 OpenAI、DeepSeek、TFR 或 CD Projekt Red 官方项目。
 
 ## 直接让 Codex 安装
 
@@ -28,9 +28,9 @@ node "$HOME/.mirror-protocol/mirror.mjs" status --json
 node "$HOME/.mirror-protocol/mirror.mjs" verify --screenshot "$HOME/mirror-protocol-check.png"
 ```
 
-若普通启动后无法激活，可运行 `node "$HOME/.mirror-protocol/launch-activation.mjs"`。等独立等待程序报告就绪后，从菜单完全退出 Codex；程序观察到退出后仅启动一次主题版。Windows 使用 WMI 独立进程，避免辅助程序随 Codex 关闭而消失。详见 [退出后启用](INSTALL.md#普通启动或关闭后驻留导致无法激活)。
+当前没有调试端口时会明确拒绝应用，保留原生界面。旧 `launch-activation.mjs` 与退出后重开辅助已停用；不要继续使用旧 Release 的启动器。首次启用端口须另按 [codexthemes.ai switcher](https://github.com/codexthemes/skills/tree/main/skills/codex-theme-switcher) 的流程获得正常重启授权，本项目不再自行重启客户端。[Windows 兼容说明](WINDOWS-COMPATIBILITY.md)。
 
-安装器不会自动重启；首次启用本机调试端口可能需要一次获准的正常重启。[Windows 兼容说明](WINDOWS-COMPATIBILITY.md)。
+应用成功后，右键右下正圆徽章（或 Shift+单击、↓）选择 **☀ DeepSeek 日间 / ☾ DeepSeek 夜间**。普通单击仍切换 DeepSeek 与长征机。
 
 ## 独立预览
 

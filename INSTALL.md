@@ -45,29 +45,19 @@ node <安装目录>/releases/<当前版本>/runtime/scripts/runtime.mjs --verify
 
 自动发现官方应用失败时，使用 **use mirror-protocol-auto --app-path <官方可执行文件>**，或安装时使用 **--apply --app-path <官方可执行文件>**。运行时仍会检查OpenAI签名；不能换成无签名程序或放宽检查。
 
-如果第一次启用时提示当前 Codex 没有本机调试端口，安装文件已保存；**先获得用户对一次正常重启的明确同意**，再使用：
+本版所有应用操作均为 **attach-only**：只连接已经开放 `127.0.0.1:9335` 且已有可见主界面的 Codex。缺少端口、只有辅助窗口或空壳时拒绝应用，不打开、关闭或重启客户端。`--restart-existing` 和 `--profile-path` 已停用。
 
-```powershell
-node "$HOME/.mirror-protocol/mirror.mjs" use mirror-protocol-auto --restart-existing
-```
+首次启用调试端口须另按 [codexthemes.ai 的 codex-theme-switcher](https://github.com/codexthemes/skills/tree/main/skills/codex-theme-switcher) 处理，且必须先取得用户对正常重启的明确授权。该站是第三方主题项目。本项目不再自建替代启动器，不指定或复制 Codex 配置目录。不能强制结束 Codex、补丁签名应用或静默改变官方原生设置。新版配色通过语义变量适配界面，但仍需实机逐页检查。
 
-不能强制结束 Codex、补丁签名应用、绕过端口冲突或静默改变官方原生外观。自动包设计为浅蓝基底/深色入侵，原生外观不匹配时需用户调整并重新检查。当前版本的原生结构不兼容时应报告并恢复。
+右键正圆徽章、Shift+单击或按 ↓，可选择 **☀ DeepSeek 日间 / ☾ DeepSeek 夜间**；普通单击切换 DeepSeek 与长征机。验证失败会撤回主题与管理器，并将实际校验结果写入本机私有 `CodexThemeStudio/startup-verification.json`。
 
 如果另一份 Theme Studio 管理器正在运行，安装器拒绝接管它。先用该管理器原本的 **theme.mjs restore** 恢复、停止，再应用本安装；不要同时运行两个主题管理器。
 
-## 普通启动或关闭后驻留导致无法激活
+## 旧启动器已停用
 
-如果 `status` 仍是 inactive，且启动提示 Codex 已运行但没有调试端口，使用独立等待入口：
+v2.3.3 及更早的退出后重开流程存在用户配置覆盖、重复客户端与失败后残留风险。`launch-activation.mjs` 和 `activate-after-exit.mjs` 现直接拒绝运行。请从当前 main 源码更新；旧 latest Release v2.3.1 不包含这些修复。
 
-```powershell
-node "$HOME/.mirror-protocol/launch-activation.mjs"
-```
-
-Windows 入口通过系统 WMI 进程服务启动隐藏辅助程序，读回进程身份与新的等待状态后才报告已就绪；不创建计划任务或开机启动项。不能只用 Codex 内的 `Start-Process`、Node `detached` 或直接运行 `activate-after-exit.mjs`：这些方式可能随 Codex 退出一同中断，留下旧的 waiting 状态。
-
-看到独立等待程序已就绪后，从 Codex 的菜单**完全退出**应用；不要只关闭窗口，也不要从任务栏重新打开。辅助程序最多等待10分钟，观察到官方进程全部退出后，仅调用原安装入口启动一次带本机调试端口的 Codex。它不请求退出、不结束进程、不自动重试，不创建其他主题管理器。启动完成后仍需 status、verify 和截图检查。
-
-等待状态在 `~/.mirror-protocol/activation.json`，`updatedAt` 会随轮询刷新；摘要日志在 `activation.log`。仅有旧 waiting 记录不能证明程序仍在运行，须核对 helperPid、进程身份与更新时间。入口只在确认旧锁的进程已不存在后清理旧锁，遇到活动进程拒绝并行启动。建立 `activation.cancel` 文件可以取消等待；下次重新等待前删除该取消文件。卸载或更换安装版本也会自动停止等待。一个安装目录只允许一个等待程序。
+可用 `node "$HOME/.mirror-protocol/attach-theme.mjs" --check` 只读检查现有窗口；不带 `--check` 时尝试连接和验证主题。不要为绕过拒绝逻辑再创建配置目录、WMI 辅助或重启脚本。
 
 ## 恢复与卸载
 

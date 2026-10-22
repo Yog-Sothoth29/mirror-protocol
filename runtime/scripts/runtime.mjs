@@ -8,6 +8,7 @@ import { openLoopbackUrl, securePrivateFile, statePathFor } from "./platform-run
 import { acquireWatcherLock, releaseWatcherLock } from "./runtime-lifecycle.mjs";
 import { CodexUsageProvider } from "./usage-provider.mjs";
 import { extendRendererExpression } from "./mirror-protocol.mjs";
+import { isAuxiliaryTarget, visibleMain, readinessExpression } from "./page-policy.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
@@ -26,6 +27,7 @@ function parseArgs(argv) {
     else if (arg === "--verify") options.mode = "verify";
     else if (arg === "--smoke") options.mode = "smoke";
     else if (arg === "--remove") options.mode = "remove";
+    else if (arg === "--ready") options.mode = "ready";
     else if (arg === "--timeout-ms") options.timeoutMs = Number(argv[++index]);
     else if (arg === "--screenshot") options.screenshot = path.resolve(argv[++index]);
     else if (arg === "--theme") options.theme = argv[++index];
@@ -34,7 +36,7 @@ function parseArgs(argv) {
   if (!Number.isInteger(options.port) || options.port < 1024 || options.port > 65535) throw new Error("Invalid CDP port");
   if (options.controlPort !== null && (!Number.isInteger(options.controlPort) || options.controlPort < 1024 || options.controlPort > 65535)) throw new Error("Invalid control port");
   if ((options.controlPort === null) !== (options.controlToken === null)) throw new Error("Control port and token must be supplied together");
-  if (options.mode !== "remove" && !options.theme) throw new Error("--theme is required");
+  if (!["remove", "ready"].includes(options.mode) && !options.theme) throw new Error("--theme is required");
   return options;
 }
 
@@ -112,14 +114,14 @@ class CdpSession {
   }
 }
 
-async function waitForTargets(port, timeoutMs) {
+async function waitForTargets(port, timeoutMs, includeAuxiliary = false) {
   const deadline = Date.now() + timeoutMs;
   let lastError;
   while (Date.now() < deadline) {
     try {
       const response = await fetch(`http://127.0.0.1:${port}/json/list`, { signal: AbortSignal.timeout(1500) });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const targets = (await response.json()).filter((item) => item.type === "page" && String(item.url).startsWith("app://"));
+      const targets = (await response.json()).filter((item) => item.type === "page" && String(item.url).startsWith("app://") && (includeAuxiliary || !isAuxiliaryTarget(item)));
       if (targets.length) return targets;
     } catch (error) { lastError = error; }
     await new Promise((resolve) => setTimeout(resolve, 300));
@@ -194,24 +196,25 @@ async function managerExpression(control) {
 const bridgeDrainExpression = `(() => window.__CODEX_THEME_STUDIO_SWITCHER_STATE__?.drainRequests?.() ?? [])()`;
 const bridgeDeliveryExpression = (id, result, error) => `(() => window.__CODEX_THEME_STUDIO_SWITCHER_STATE__?.deliver?.(${JSON.stringify(id)}, ${JSON.stringify(result ?? null)}, ${JSON.stringify(error ?? null)}) ?? false)()`;
 
-const verifyExpression = (expected, smoke, auxiliary = false) => `(() => {
+export const verifyExpression = (expected, smoke, auxiliary = false) => `(() => {
   const rect = (node) => { if (!node) return null; const r = node.getBoundingClientRect(); return { left:r.left, top:r.top, right:r.right, bottom:r.bottom, width:r.width, height:r.height }; };
   const visible = (value) => Boolean(value && value.width > 0 && value.height > 0);
   const overlap = (a,b) => a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  const shown = node => node.checkVisibility({checkOpacity:true,checkVisibilityCSS:true});
   const decorations = document.getElementById('codex-theme-studio-decorations');
   const switcher = document.getElementById('codex-theme-studio-switcher');
   const switcherButton = switcher?.querySelector('.cts-switch-button');
   const cards = decorations ? [...decorations.querySelectorAll('.cts-decoration-card:not([hidden])')] : [];
   const controls = [...document.querySelectorAll('button,a[href],input,textarea,select,[contenteditable="true"],[role="button"],[role="link"],[role="menuitem"],[role="option"],[role="tab"]')]
-    .filter(node => !node.closest('#codex-theme-studio-decorations')).map(rect).filter(visible);
+    .filter(node => shown(node) && !node.closest('#codex-theme-studio-decorations,#codex-theme-studio-switcher')).map(rect).filter(visible);
   const collisions = cards.flatMap(card => controls.filter(control => overlap(rect(card), control))).length;
   const switcherRect = switcher && !switcher.hidden ? rect(switcher) : null;
   const switcherCollisions = switcherRect ? [...document.querySelectorAll('button,a[href],input,textarea,select,[contenteditable="true"],[role="button"],[role="link"]')]
-    .filter(node => !switcher.contains(node) && !node.closest('#codex-theme-studio-decorations')).map(rect).filter(visible).filter(control => overlap(switcherRect, control)).length : 0;
-  const home = document.querySelector('[role="main"]:has([data-testid="home-icon"])');
-  const composer = document.querySelector('.composer-surface-chrome,[data-composer-body]');
+    .filter(node => shown(node) && !switcher.contains(node) && !node.closest('#codex-theme-studio-decorations')).map(rect).filter(visible).filter(control => overlap(switcherRect, control)).length : 0;
+  const home = [...document.querySelectorAll('[role="main"]:has([data-testid="home-icon"])')].find(shown);
+  const composer = [...document.querySelectorAll('.composer-surface-chrome,[data-composer-body]')].find(shown);
   const sidebar = document.querySelector('aside.app-shell-left-panel');
-  const main = document.querySelector('main.main-surface') || document.querySelector('main');
+  const main = (${visibleMain.toString()})();
   const result = {
     installed: document.documentElement.classList.contains('codex-theme-studio-skin'),
     themeId: document.documentElement.dataset.codexThemeStudio || null,
@@ -250,20 +253,13 @@ async function capture(session, output) {
   await fs.writeFile(output, Buffer.from(result.data, "base64"));
 }
 
-function isAuxiliaryTarget(target) {
-  try {
-    const route = new URL(target.url).searchParams.get("initialRoute") ?? "";
-    return new URL(target.url).pathname === "/detached-window.html" || route === "/hotkey-window" || route === "/avatar-overlay" || route.startsWith("/overlay") || route.startsWith("/diagnostic");
-  } catch { return false; }
-}
-
 async function apply(session, payload) {
   return session.evaluate(payload.expression);
 }
 
 async function runOneShot(options) {
-  const targets = await waitForTargets(options.port, options.timeoutMs);
-  const payload = options.mode === "remove" ? null : await loadPayload(options.theme);
+  const targets = await waitForTargets(options.port, options.timeoutMs, options.mode === "remove");
+  const payload = ["remove", "ready"].includes(options.mode) ? null : await loadPayload(options.theme);
   const results = [];
   let screenshotCaptured = false;
   let screenshotError = null;
@@ -272,8 +268,8 @@ async function runOneShot(options) {
     try {
       if (options.mode === "remove") { await session.evaluate(removeExpression); await session.evaluate(removeManagerExpression); }
       else if (options.mode === "once") { await apply(session, payload); await new Promise((resolve) => setTimeout(resolve, 500)); }
-      const result = options.mode === "remove"
-        ? await session.evaluate("!document.documentElement.classList.contains('codex-theme-studio-skin')")
+      const result = options.mode === "ready" ? await session.evaluate(readinessExpression) : options.mode === "remove"
+        ? await session.evaluate("!document.documentElement.classList.contains('codex-theme-studio-skin') && !window.__CODEX_THEME_STUDIO_STATE__ && !window.__CODEX_THEME_STUDIO_SWITCHER_STATE__ && !window.__MIRROR_PROTOCOL__ && !document.querySelector('#codex-theme-studio-style,#codex-theme-studio-decorations,#codex-theme-studio-switcher,.mp-stage')")
         : await session.evaluate(verifyExpression(payload.theme, options.mode === "smoke" || isAuxiliaryTarget(target), isAuxiliaryTarget(target)));
       results.push({ targetId: target.id, title: target.title, url: target.url, result });
       if (options.screenshot && !screenshotCaptured && !isAuxiliaryTarget(target)) {
@@ -282,7 +278,7 @@ async function runOneShot(options) {
       }
     } finally { session.close(); }
   }
-  const passed = (options.mode === "remove" ? results.every((row) => row.result === true) : results.every((row) => row.result.pass)) && (!options.screenshot || screenshotCaptured);
+  const passed = (options.mode === "ready" ? results.some(row => row.result?.ready) : options.mode === "remove" ? results.every((row) => row.result === true) : results.every((row) => row.result.pass)) && (!options.screenshot || screenshotCaptured);
   console.log(JSON.stringify({ mode: options.mode, port: options.port, passed, screenshot: options.screenshot ? { captured: screenshotCaptured, path: options.screenshot, error: screenshotError } : null, targets: results }, null, 2));
   if (!passed) process.exitCode = 2;
 }
@@ -318,6 +314,7 @@ async function runWatch(options) {
     await fs.rename(temporary, statePath);
   };
   const applyCurrent = async (session, refreshSwitcher = true) => {
+    if (payload && !(await session.evaluate(readinessExpression))?.ready) throw new Error("Native Codex UI is not ready; no theme was injected into the empty shell.");
     if (payload) await apply(session, payload); else await session.evaluate(removeExpression);
     if (payload && usesQuota(payload)) await session.evaluate(usageUpdateExpression(usageSnapshot));
     if (refreshSwitcher && switcherExpression) await session.evaluate(switcherExpression);
@@ -370,8 +367,6 @@ async function runWatch(options) {
   const requestStop = () => {
     stopping = true;
     usageProvider?.stop();
-    for (const session of sessions.values()) session.close();
-    for (const session of pendingSessions) session.close();
     controlServer?.server.closeAllConnections?.();
   };
   const forceExitTimer = () => setTimeout(() => {
@@ -411,7 +406,7 @@ async function runWatch(options) {
   const shutdownTheme = () => enqueue(async () => {
         payload = null;
         syncUsageProvider();
-        await Promise.allSettled(liveSessions().map(async (session) => { await session.evaluate(removeExpression); await session.evaluate(removeManagerExpression); }));
+        await applyToLiveSessions(async (session) => { await session.evaluate(removeExpression); await session.evaluate(removeManagerExpression); });
         stopping = true;
         return { restored: true, stopped: true };
       });
@@ -485,6 +480,11 @@ async function runWatch(options) {
   } finally {
   shutdownPromise ??= (async () => {
     usageProvider?.stop();
+    const cleanup = await Promise.allSettled([...sessions.values()].filter(session => !session.closed).map(async session => {
+      await session.evaluate(removeExpression);
+      await session.evaluate(removeManagerExpression);
+    }));
+    const cleanupConfirmed = cleanup.every(result => result.status === 'fulfilled');
     for (const session of sessions.values()) session.close();
     for (const session of pendingSessions) session.close();
     sessions.clear();
@@ -495,13 +495,24 @@ async function runWatch(options) {
     }
     let state = null;
     try { state = JSON.parse(await fs.readFile(statePath, "utf8")); } catch { /* already removed */ }
-    if (state?.watcherPid === process.pid) await fs.rm(statePath, { force: true });
+    if (state?.watcherPid === process.pid) {
+      if (cleanupConfirmed) await fs.rm(statePath, { force: true });
+      else {
+        state.cleanupConfirmed = false;
+        state.activationFailed = true;
+        state.activeTheme = null;
+        await fs.writeFile(statePath, JSON.stringify(state, null, 2));
+        console.error('[theme-studio] Renderer cleanup was not confirmed; recovery state was retained.');
+      }
+    }
     await releaseWatcherLock(lockPath);
   })();
   await shutdownPromise;
   }
 }
 
-const options = parseArgs(process.argv.slice(2));
-if (options.mode === "watch") await runWatch(options);
-else await runOneShot(options);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const options = parseArgs(process.argv.slice(2));
+  if (options.mode === "watch") await runWatch(options);
+  else await runOneShot(options);
+}
