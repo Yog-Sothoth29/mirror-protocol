@@ -1,0 +1,94 @@
+{
+  "pass": true,
+  "initial": [
+    {
+      "width": 940,
+      "height": 925,
+      "layout": "half",
+      "mode": "blue",
+      "appearance": "day",
+      "transitioning": false,
+      "overflow": false,
+      "button": true,
+      "leftDecorRight": 42.00168918918919,
+      "horizontalLayers": 0
+    },
+    {
+      "width": 940,
+      "height": 925,
+      "layout": "half",
+      "mode": "blue",
+      "appearance": "night",
+      "transitioning": false,
+      "overflow": false,
+      "button": true,
+      "leftDecorRight": 42.00168918918919,
+      "horizontalLayers": 0
+    }
+  ],
+  "red": [
+    {
+      "width": 940,
+      "height": 925,
+      "layout": "half",
+      "mode": "red",
+      "appearance": "day",
+      "transitioning": false,
+      "overflow": false,
+      "button": true,
+      "leftDecorRight": 42.00168918918919,
+      "horizontalLayers": 0
+    },
+    {
+      "width": 940,
+      "height": 925,
+      "layout": "half",
+      "mode": "red",
+      "appearance": "night",
+      "transitioning": false,
+      "overflow": false,
+      "button": true,
+      "leftDecorRight": 42.00168918918919,
+      "horizontalLayers": 0
+    }
+  ],
+  "returned": [
+    {
+      "width": 940,
+      "height": 925,
+      "layout": "half",
+      "mode": "blue",
+      "appearance": "day",
+      "transitioning": false,
+      "overflow": false,
+      "button": true,
+      "leftDecorRight": 42.00168918918919,
+      "horizontalLayers": 0
+    },
+    {
+      "width": 940,
+      "height": 925,
+      "layout": "half",
+      "mode": "blue",
+      "appearance": "night",
+      "transitioning": false,
+      "overflow": false,
+      "button": true,
+      "leftDecorRight": 42.00168918918919,
+      "horizontalLayers": 0
+    }
+  ],
+  "single": {
+    "width": 1894,
+    "layout": "wide"
+  },
+  "media": {
+    "width": 1920,
+    "height": 1080,
+    "duration": 9.92,
+    "frames": 12,
+    "error": null
+  },
+  "pageErrors": [],
+  "limitation": "Two browser iframe fixtures emulate side-by-side windows; not actual Windows Snap or live Codex validation."
+}

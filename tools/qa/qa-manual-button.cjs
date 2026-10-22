@@ -1,0 +1,24 @@
+const {chromium}=require(process.env.MIRROR_PLAYWRIGHT || 'playwright');
+const fs=require('node:fs/promises'),path=require('node:path'),assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage({viewport:{width:1600,height:1000}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.clock.install({time:new Date('2026-10-15T16:30:00Z')});await page.goto('http://127.0.0.1:8791');await page.waitForFunction(()=>window.previewReady);
+ const out=path.resolve(__dirname,'../../previews');const button=page.locator('.cts-switch-button');
+ await page.evaluate(()=>choose('blue'));await page.clock.runFor(1500);
+ const box=await button.boundingBox();assert.equal(box.width,38);assert.equal(box.height,38);
+ const checkCollision=()=>page.evaluate(()=>{const root=document.querySelector('#codex-theme-studio-switcher'),a=root.getBoundingClientRect();return [...document.querySelectorAll('button,a[href],textarea,input')].filter(n=>!root.contains(n)&&n.getClientRects().length).some(n=>{const b=n.getBoundingClientRect();return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;});});assert.equal(await checkCollision(),false);
+ await page.screenshot({path:path.join(out,'manual-blue.png'),clip:{x:1340,y:740,width:250,height:230}});
+ await button.click();await page.clock.runFor(1500);assert.deepEqual(await page.evaluate(()=>{const s=__MIRROR_PROTOCOL__.snapshot();return {mode:s.mode,automatic:s.automatic}}),{mode:'red',automatic:false});
+ assert.match(await button.getAttribute('aria-label'),/黑红/);assert.equal(await page.locator('#codex-theme-studio-switcher').getAttribute('data-mirror'),'red');
+ await page.screenshot({path:path.join(out,'manual-red.png'),clip:{x:1340,y:740,width:250,height:230}});
+ await button.click();await page.clock.runFor(1500);assert.equal(await page.evaluate(()=>__MIRROR_PROTOCOL__.snapshot().mode),'blue');
+ await button.click({button:'right'});await page.clock.runFor(100);assert.equal(await page.locator('.cts-switch-panel').isVisible(),true);
+ await page.getByRole('button',{name:/恢复自动/}).click();await page.clock.runFor(1500);assert.equal(await page.evaluate(()=>__MIRROR_PROTOCOL__.snapshot().automatic),true);assert.equal(await page.locator('.cts-switch-panel').isVisible(),false);
+ await button.focus();await page.keyboard.press('Enter');await page.clock.runFor(1500);assert.equal(await page.evaluate(()=>__MIRROR_PROTOCOL__.snapshot().automatic),false);
+ await page.keyboard.press('ArrowDown');await page.clock.runFor(100);assert.equal(await page.locator('.cts-switch-panel').isVisible(),true);await page.screenshot({path:path.join(out,'manual-menu.png')});await page.keyboard.press('Escape');assert.equal(await page.locator('.cts-switch-panel').isVisible(),false);
+ await page.getByRole('button',{name:'打开设置'}).click();await page.evaluate(()=>__CODEX_THEME_STUDIO_SWITCHER_STATE__.place());assert.equal(await button.isVisible(),false);await page.getByRole('button',{name:'完成',exact:true}).click();
+ await page.setViewportSize({width:560,height:760});await page.clock.runFor(100);assert.equal(await button.isVisible(),false);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ await page.setViewportSize({width:1600,height:1000});await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>__CODEX_THEME_STUDIO_SWITCHER_STATE__.place());await button.click();assert.equal(await page.evaluate(()=>__MIRROR_PROTOCOL__.snapshot().transitioning),false);
+ await page.evaluate(()=>{__CODEX_THEME_STUDIO_STATE__.cleanup();__CODEX_THEME_STUDIO_SWITCHER_STATE__.cleanup();stopPreviewTransport()});assert.equal(await button.count(),0);
+ assert.equal(errors.length,0);const result={pass:true,checks:['38×38 circular control','no native control overlap','single click toggles and pins','blue/red coordinated styling and accessible labels','right-click opens menu','resume automatic closes menu','Enter activates, ArrowDown opens, Escape dismisses','dialog hides control','560px compact hides control without overflow','reduced motion skips fracture','cleanup removes control'],pageErrors:errors,limitation:'Browser fixture only; real Codex is not connected.'};await fs.writeFile(path.join(out,'manual-button-report.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});

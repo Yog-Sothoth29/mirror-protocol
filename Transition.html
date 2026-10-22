@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script>if(new URLSearchParams(location.search).has("capture"))document.documentElement.dataset.capture="true";</script><title>镜面协议 · 原图三阶段</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080e19;color:#e4efff;font:14px/1.7 system-ui,'Microsoft YaHei',sans-serif}main{max-width:1360px;padding:26px 26px 34px;margin:auto}.eyebrow{font:10px/1.6 ui-monospace,monospace;letter-spacing:.18em;color:#83bce5}h1{font-size:clamp(21px,2.5vw,29px);font-weight:500;margin:7px 0}p{color:#9bb0c9;margin:7px 0 20px}.toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 15px}button,a{font:inherit}button{border:1px solid #38536e;border-radius:999px;background:#101f32;color:#dcecff;padding:8px 17px;cursor:pointer}button[aria-pressed=true]{background:#a7d8fb;color:#0a2034;border-color:#a7d8fb}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #b6e0ff;outline-offset:4px}.replay{margin-left:auto;width:42px;height:42px;padding:0;font-size:22px;border-color:#a9536c;color:#ff9bae;background:#241520}.stage{position:relative;width:100%;aspect-ratio:1672/941;border-radius:12px;overflow:hidden;border:1px solid #314763;background:#02060d;--p:0}.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:translate3d(var(--jitter,0px),0,0) scale(var(--punch,1))}#middle,#red{opacity:0}.sigil{position:absolute;bottom:23px;right:25px;width:60px;height:60px;border:1px solid color-mix(in srgb,#83c9ff calc((1 - var(--p))*100%),#f45468);border-radius:50%;background:#081322d9;box-shadow:0 0 20px #83c9ff28;pointer-events:none}.sigil::before{content:"";position:absolute;inset:4px;border:1px dashed #b8cede;border-radius:50%;opacity:.6}.sigil img{position:absolute;inset:10px;width:38px;height:38px;object-fit:contain}.sigil .whale{opacity:calc(1 - var(--p))}.sigil .star{opacity:var(--p)}.stamp{position:absolute;left:20px;top:18px;font:10px/1.6 ui-monospace,monospace;letter-spacing:.12em;color:#d9e8f2;background:#081322b3;padding:4px 9px;border:1px solid #7a99b94d;border-radius:4px}.seek{display:flex;gap:16px;margin-top:16px;align-items:center}.seek input{flex:1;accent-color:#83c9ff}.time{font:11px monospace;width:100px}.steps{display:flex;gap:10px;margin:14px 0}.links{display:flex;gap:15px;flex-wrap:wrap}.links a{color:#9cd2ff}.note{font-size:12px}.title-photo-stack{position:absolute;inset:0}.impact{display:none}.photo{transform:none!important}@media(max-width:700px){main{padding:15px}.steps{flex-wrap:wrap}.sigil{right:12px;bottom:12px;width:44px;height:44px}.sigil img{inset:6px;width:30px;height:30px}}html[data-capture] main{max-width:none;padding:0}html[data-capture] main>:not(.stage){display:none}html[data-capture] .stage{border:0;border-radius:0;width:100vw;height:100vh;aspect-ratio:auto}</style>
+<main>
+<div class="eyebrow">MIRROR PROTOCOL / MOTION / 2.3.1</div>
+<h1>DS → 原图碎镜闪现 → 长征机</h1>
+<p>DS较慢显现碎镜，落镜时短震后停顿；保留少量不规则条纹，再由轮廓拖尾和局部像素置换交接长征机。全程3.6秒，圆形按钮固定，人物沿用原图。</p>
+<div class="toolbar"><button id="day" aria-pressed="true">蓝白日间</button><button id="night" aria-pressed="false">深蓝夜间</button><button id="pause">暂停</button><button id="slow" aria-pressed="false">0.5× 慢放</button><span id="loading">加载原图…</span><button id="replay" class="replay" title="重播转场" aria-label="重播转场">↻</button></div>
+<div class="stage" id="stage"><div class="title-photo-stack"><img id="blue" class="photo" src="assets/deepseek-blue.png" alt="未变形的DS原图"><img id="middle" class="photo" src="assets/transition-day-original.png" alt="用原始坐标合成的破碎中间图"><img id="red" class="photo" src="assets/longmarch-black.png" alt="未对齐修图的长征机原图"></div><div class="impact" id="impact"></div><div class="stamp" id="stamp">DEEPSEEK / ORIGINAL</div><div class="sigil" aria-hidden="true"><img class="whale" src="assets/deepseek-mark.svg" alt=""><img class="star" src="assets/longmarch-mark.svg" alt=""></div></div>
+<div class="seek"><input id="seek" type="range" min="0" max="3600" value="0" step="10" aria-label="转场播放进度"><span class="time" id="time">0.0 / 3.6 s</span></div>
+<div class="steps"><button data-frame="0" aria-pressed="true">① DS 原图</button><button data-frame="480" aria-pressed="false">② 破碎中间图</button><button data-frame="3600" aria-pressed="false">③ 长征机原图</button></div>
+<p class="note">可点击阶段检查原图，或重播完整3秒切换。人物沿用原图；故障来自短暂像素置换与真实轮廓残像，结束回到未变形原图；未应用到真实 Codex。</p>
+<div class="links"><a id="source" href="assets/deepseek-blue.png">查看 DS 原始图片</a><a href="assets/longmarch-black.png">查看长征机原始图片</a><a href="docs/media/wechat-article-poster.png">完整界面图库</a><a href="index.html">交互主题预览（运行 Preview.cmd）</a></div>
+</main>
+<script>
+const duration=3600,blue=document.querySelector('#blue'),middle=document.querySelector('#middle'),red=document.querySelector('#red'),stage=document.querySelector('#stage'),seek=document.querySelector('#seek'),pause=document.querySelector('#pause'),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const motion=(function createTitleMotion({ photo, surfaces = [], marks = [], id = 'mp-title-motion' } = {}) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.id = id;
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  svg.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;overflow:hidden';
+  const defs = document.createElementNS(ns, 'defs');
+  svg.appendChild(defs);
+  const node = (tag, attrs, parent) => {
+    const el = document.createElementNS(ns, tag);
+    for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, String(value));
+    parent.appendChild(el);
+    return el;
+  };
+  const filters = [];
+  for (const [name, factor] of [['photo', 1], ['surface', .24], ['mark', .16]]) {
+    const filter = node('filter', { id: id + '-' + name, x: '-15%', y: '-25%', width: '130%', height: '150%', 'color-interpolation-filters': 'sRGB' }, defs);
+    const noise = node('feTurbulence', { type: 'turbulence', baseFrequency: '0 .036', numOctaves: 1, seed: 4, result: 'noise' }, filter);
+    const transfer = node('feComponentTransfer', { in: 'noise', result: 'map' }, filter);
+    node('feFuncR', { type: 'discrete', tableValues: '0 .2 .2 .5 .5 .5 .8 1' }, transfer);
+    node('feFuncG', { type: 'linear', slope: 0, intercept: .5 }, transfer);
+    const warp = node('feDisplacementMap', { in: 'SourceGraphic', in2: 'map', scale: 0, xChannelSelector: 'R', yChannelSelector: 'G', result: 'displaced' }, filter);
+    // Extract real image/text edges. Trails follow the source contours instead
+    // of placing decorative, evenly spaced scanlines over an intact picture.
+    node('feConvolveMatrix', { in: 'displaced', order: 3, kernelMatrix: '-1 -1 -1 -1 8 -1 -1 -1 -1', divisor: 1, bias: 0, edgeMode: 'duplicate', result: 'edge' }, filter);
+    node('feColorMatrix', { in: 'edge', type: 'matrix', values: '0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 .055 .055 .055 0 0', result: 'edgeAlpha' }, filter);
+    node('feFlood', { 'flood-color': '#9ae2da', result: 'cyan' }, filter);
+    node('feComposite', { in: 'cyan', in2: 'edgeAlpha', operator: 'in', result: 'contour' }, filter);
+    const offsets = [];
+    for (let i = 0; i < 3; i++) offsets.push(node('feOffset', { in: 'contour', dx: 0, dy: 0, result: 'trail' + i }, filter));
+    const merge = node('feMerge', {}, filter);
+    node('feMergeNode', { in: 'displaced' }, merge);
+    for (let i = 2; i >= 0; i--) node('feMergeNode', { in: 'trail' + i }, merge);
+    // Output is a source image plus contour trails; no full-screen flash layer.
+    filters.push({ name, factor, noise, warp, offsets });
+  }
+  document.body.appendChild(svg);
+  const originalTransform = photo?.style.getPropertyValue('transform') || '';
+  const originalTransformPriority = photo?.style.getPropertyPriority('transform') || '';
+  const stripes = document.createElement('div');
+  stripes.className = 'mp-title-stripes';
+  stripes.setAttribute('aria-hidden', 'true');
+  stripes.style.cssText = 'position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent 5%,#9ae2da99 5% 21%,transparent 21%) 0 19%/100% 1px no-repeat,linear-gradient(90deg,transparent 19%,#e4ce7899 19% 36%,transparent 36%) 0 43%/100% 1px no-repeat,linear-gradient(90deg,transparent 9%,#9ae2da99 9% 31%,transparent 31%) 0 74%/100% 2px no-repeat';
+  photo?.appendChild(stripes);
+  const records = [];
+  const attach = (el, name) => {
+    if (!el || records.some(r => r.el === el)) return;
+    records.push({ el, name, value: el.style.getPropertyValue('filter'), priority: el.style.getPropertyPriority('filter') });
+  };
+  attach(photo, 'photo');
+  surfaces.forEach(el => attach(el, 'surface'));
+  marks.forEach(el => attach(el, 'mark'));
+  // Short unequal impulses, each followed by a genuinely clean locked frame.
+  const beats = [
+    [1280, 1360, -34, 5], [1440, 1560, 54, 12],
+    [1650, 1750, -46, 9], [1830, 1930, 32, 6],
+    [2040, 2120, -24, 4], [2230, 2290, 14, 2],
+  ];
+  let active = false, disposed = false, raf = 0, startedAt = 0, lastFrame = -1;
+  function sample(time) {
+    if (disposed) return null;
+    const beat = beats.find(b => time >= b[0] && time < b[1]);
+    const index = beat ? beats.indexOf(beat) : -1;
+    const frame = Math.floor(time / 40);
+    const phase = beat ? Math.floor((time - beat[0]) / 40) : 0;
+    const decay = [1, -.48, .22][Math.min(2, phase)];
+    const amount = beat ? beat[2] * decay : 0;
+    const impact = [[180,0],[240,-2],[315,1.6],[400,-.8],[500,.4],[620,0]];
+    let recoil = 0;
+    for (let i=0;i<impact.length-1;i++) {
+      const a=impact[i],b=impact[i+1];
+      if(time>=a[0]&&time<b[0]) {const u=(time-a[0])/(b[0]-a[0]),ease=u*u*(3-2*u);recoil=a[1]+(b[1]-a[1])*ease;break;}
+    }
+    if(photo) {
+      if(Math.abs(recoil)>.001)photo.style.setProperty('transform','translate3d('+recoil.toFixed(2)+'px,0,0)');
+      else if(originalTransform)photo.style.setProperty('transform',originalTransform,originalTransformPriority);
+      else photo.style.removeProperty('transform');
+    }
+    stripes.style.opacity=beat?'.46':time>=220&&time<520?'.18':'0';
+    if (active !== Boolean(beat)) {
+      active = Boolean(beat);
+      for (const r of records) {
+        if (active) r.el.style.setProperty('filter', 'url(#' + id + '-' + r.name + ')', 'important');
+        else if (r.value) r.el.style.setProperty('filter', r.value, r.priority);
+        else r.el.style.removeProperty('filter');
+      }
+    }
+    if (frame !== lastFrame) {
+      lastFrame = frame;
+      for (const f of filters) {
+        f.noise.setAttribute('seed', String(7 + index * 11 + phase * 3));
+        f.noise.setAttribute('baseFrequency', '0 ' + (.003 + Math.max(0, index) * .0008).toFixed(4));
+        f.warp.setAttribute('scale', (amount * f.factor).toFixed(2));
+        for (let i = 0; i < 3; i++) {
+          const fraction = (i + 1) / 3;
+          f.offsets[i].setAttribute('dx', (amount * .7 * f.factor * fraction).toFixed(2));
+          f.offsets[i].setAttribute('dy', (beat ? -beat[3] * f.factor * fraction * Math.abs(decay) : 0).toFixed(2));
+        }
+      }
+    }
+    const state = { time, active, beat: index, amount, phase, recoil, stripes: Number(stripes.style.opacity), source: 'contour-displacement', wholeFrameFlash: false };
+    svg.dataset.frame = JSON.stringify(state);
+    return state;
+  }
+  function stop() { cancelAnimationFrame(raf); raf = 0; }
+  function play() {
+    stop(); startedAt = performance.now();
+    const tick = now => { sample(now - startedAt); if (now - startedAt < 3600 && !disposed) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+  }
+  function dispose() {
+    if (disposed) return;
+    stop(); sample(3600); disposed = true;
+    stripes.remove();
+    svg.remove();
+  }
+  return { sample, play, stop, dispose, beats };
+})({photo:document.querySelector('.title-photo-stack'),id:'mp-preview-title-motion'});
+let time=0,playing=false,rate=1,previous=performance.now(),generation=0,variantName='day';
+const clamp=x=>Math.max(0,Math.min(1,x)),smooth=x=>{const t=clamp(x);return t*t*(3-2*t);};
+function draw(){
+ const m=smooth((time-180)/240),r=smooth((time-1720)/760),icon=smooth((time-420)/360);
+ const titleState=motion.sample(reduced?0:time);
+ document.querySelector('#impact').style.opacity='0';
+ middle.style.opacity=m;red.style.opacity=r;stage.style.setProperty('--echo-red',r);stage.style.setProperty('--p',icon);seek.value=time;document.querySelector('#time').textContent=(time/1000).toFixed(1)+' / 3.6 s';const i=time<300?0:time<2480?1:2;document.querySelectorAll('[data-frame]').forEach((b,n)=>b.setAttribute('aria-pressed',n===i));document.querySelector('#stamp').textContent=['DEEPSEEK / ORIGINAL','MIRROR / BETWEEN','THE LONG MARCH / ORIGINAL'][i];pause.textContent=playing?'暂停':time>=duration?'重播':'播放';window.photoState={time,playing,variant:variantName,middle:m,red:r,icon,titleMotion:titleState};}
+function start(){time=0;playing=true;previous=performance.now();draw();}
+function frame(now){if(playing){time=Math.min(duration,time+Math.min(120,now-previous)*rate);if(time===duration)playing=false;draw();}previous=now;requestAnimationFrame(frame);}
+async function variant(name){const token=++generation;window.photoReady=false;variantName=name;playing=false;time=0;draw();document.querySelector('#loading').textContent='加载原图…';blue.src='assets/deepseek-'+(name==='night'?'night':'blue')+'.png';middle.src='assets/transition-'+name+'-original.png';stage.style.setProperty('--echo-middle','url("'+middle.getAttribute('src')+'")');document.querySelector('#source').href=blue.src;document.querySelector('#day').setAttribute('aria-pressed',name==='day');document.querySelector('#night').setAttribute('aria-pressed',name==='night');try{await Promise.all([blue,middle,red].map(img=>img.decode()));if(token!==generation)return;document.querySelector('#loading').textContent='';window.photoReady=true;if(!reduced)start();else draw();}catch(error){document.querySelector('#loading').textContent='图片加载失败，请从完整交付目录打开';}}
+document.querySelector('#day').onclick=()=>variant('day');document.querySelector('#night').onclick=()=>variant('night');document.querySelector('#replay').onclick=start;
+pause.onclick=()=>{if(time>=duration)start();else{playing=!playing;previous=performance.now();draw();}};
+document.querySelector('#slow').onclick=e=>{const enabled=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',enabled);rate=enabled?.5:1;};
+seek.oninput=()=>{playing=false;time=Number(seek.value);draw();};document.querySelectorAll('[data-frame]').forEach(b=>b.onclick=()=>{playing=false;time=Number(b.dataset.frame);draw();});
+window.seekPhoto=t=>{playing=false;time=Math.max(0,Math.min(duration,t));draw();};window.startPhotos=start;requestAnimationFrame(frame);variant('day');
+</script></html>

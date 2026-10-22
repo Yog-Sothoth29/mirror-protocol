@@ -1,0 +1,13 @@
+{
+  "pass": true,
+  "firstInstall": true,
+  "idempotent": true,
+  "fourThemes": true,
+  "commandFromInstallDirectory": true,
+  "refusesTamperedRelease": true,
+  "protectsForeignDirectory": true,
+  "uninstall": true,
+  "repeatedUninstall": true,
+  "cleanSourceWithoutNodeModulesOrGeneratedThemes": true,
+  "actualCodexApplied": false
+}

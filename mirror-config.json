@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "enabled": true,
+  "epochMs": 1792075846065,
+  "seed": 20261015,
+  "quietMinMs": 360000,
+  "quietMaxMs": 840000,
+  "redMinMs": 25000,
+  "redMaxMs": 70000
+}

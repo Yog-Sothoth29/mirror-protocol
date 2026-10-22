@@ -1,0 +1,40 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+const source = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const scratch = await fs.mkdtemp(path.join(os.tmpdir(), 'mirror-install-qa-'));
+const root = path.join(scratch, 'installed'), foreign = path.join(scratch, 'foreign');
+const run = (name, args = []) => spawnSync(process.execPath, [path.join(source, 'tools', name), '--root', root, ...args], { cwd: source, encoding: 'utf8', windowsHide: true });
+try {
+  const first = run('install.mjs'); assert.equal(first.status, 0, first.stderr);
+  const initial = JSON.parse(first.stdout); assert.equal(initial.applied, false); assert.equal(initial.themes.length, 4);
+  const second = run('install.mjs'); assert.equal(second.status, 0, second.stderr); assert.equal(JSON.parse(second.stdout).release, initial.release);
+  const list = run('mirror.mjs', ['list', '--json']); assert.equal(list.status, 0, list.stderr); assert.equal(JSON.parse(list.stdout).themes.length, 4);
+  const cli = path.join(root, 'mirror.mjs');
+  const fromInstalledDirectory = spawnSync(process.execPath, [cli, '--root', root, 'list', '--json'], { cwd: root, encoding: 'utf8', windowsHide: true });
+  assert.equal(fromInstalledDirectory.status, 0, fromInstalledDirectory.stderr);
+  const file = path.join(initial.release, 'runtime/scripts/mirror-protocol.mjs'), previous = await fs.readFile(file);
+  await fs.appendFile(file, '\n// QA tamper\n'); const tamper = run('install.mjs'); assert.notEqual(tamper.status, 0); assert.match(tamper.stderr, /immutable release differs/); await fs.writeFile(file, previous);
+  await fs.mkdir(foreign); await fs.writeFile(path.join(foreign, 'keep.txt'), 'owned by somebody else');
+  const unsafe = spawnSync(process.execPath, [path.join(source, 'tools/install.mjs'), '--root', foreign], { cwd: source, encoding: 'utf8', windowsHide: true });
+  assert.notEqual(unsafe.status, 0); assert.equal(await fs.readFile(path.join(foreign, 'keep.txt'), 'utf8'), 'owned by somebody else');
+  const removed = run('uninstall.mjs'); assert.equal(removed.status, 0, removed.stderr); assert.equal(JSON.parse(removed.stdout).removed, true);
+  const again = run('uninstall.mjs'); assert.equal(again.status, 0, again.stderr); assert.equal(JSON.parse(again.stdout).reason, 'not-installed');
+  const clone = path.join(scratch, 'clean-source'), cleanRoot = path.join(scratch, 'clean-installed');
+  await fs.mkdir(path.join(clone, 'tools'), { recursive: true });await fs.mkdir(path.join(clone, 'previews'));
+  for (const relative of ['LICENSE','ASSET-LICENSE.md','THIRD_PARTY_NOTICES.md','INSTALL.md','Transition.html']) await fs.copyFile(path.join(source,relative),path.join(clone,relative));
+  for (const relative of ['install.mjs','uninstall.mjs','mirror.mjs','installer-common.mjs','build-theme.mjs','build-title-motion.mjs','surface-design.mjs']) await fs.copyFile(path.join(source,'tools',relative),path.join(clone,'tools',relative));
+  await fs.cp(path.join(source,'assets'),path.join(clone,'assets'),{recursive:true});
+  await fs.cp(path.join(source,'runtime'),path.join(clone,'runtime'),{recursive:true,filter:filename=>!path.relative(path.join(source,'runtime'),filename).split(path.sep).includes('themes')});
+  const clean = spawnSync(process.execPath,[path.join(clone,'tools/install.mjs'),'--root',cleanRoot],{cwd:clone,encoding:'utf8',windowsHide:true});assert.equal(clean.status,0,clean.stderr);assert.equal(JSON.parse(clean.stdout).themes.length,4);
+  const cleanRemoval=spawnSync(process.execPath,[path.join(clone,'tools/uninstall.mjs'),'--root',cleanRoot],{cwd:clone,encoding:'utf8',windowsHide:true});assert.equal(cleanRemoval.status,0,cleanRemoval.stderr);
+  const report={ pass: true, firstInstall: true, idempotent: true, fourThemes: true, commandFromInstallDirectory: true, refusesTamperedRelease: true, protectsForeignDirectory: true, uninstall: true, repeatedUninstall: true, cleanSourceWithoutNodeModulesOrGeneratedThemes: true, actualCodexApplied: false };
+  await fs.mkdir(path.join(source,'docs/qa'),{recursive:true});await fs.writeFile(path.join(source,'docs/qa/installer-report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
+} finally {
+  const resolved = await fs.realpath(scratch);
+  assert.ok(path.dirname(resolved).toLowerCase() === (await fs.realpath(os.tmpdir())).toLowerCase() && path.basename(resolved).startsWith('mirror-install-qa-'));
+  await fs.rm(resolved, { recursive: true, force: true });
+}

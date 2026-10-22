@@ -1,0 +1,20 @@
+{
+  "version": "2.2.8",
+  "cover": [
+    1800,
+    766
+  ],
+  "smallCover": [
+    900,
+    383
+  ],
+  "poster": {
+    "width": 1080,
+    "height": 3247
+  },
+  "transitionFrames": 46,
+  "transitionMs": 3000,
+  "pageErrors": [],
+  "illustration": "AI-generated promotional artwork",
+  "screenshots": "Independent browser fixtures, not live Codex screenshots"
+}

@@ -1,0 +1,16 @@
+{
+  "version": "2.2.8",
+  "dependencyLockValid": true,
+  "buildPassed": true,
+  "coreChecks": 66,
+  "scheduleChecks": 40971,
+  "releaseDirectoryBuildPassed": true,
+  "trackedFilesScanned": 102,
+  "trackedBytes": 37758489,
+  "privacyAndSizeFindings": [],
+  "READMEInternalLinksValid": true,
+  "remoteCreated": false,
+  "githubActionsRun": false,
+  "actualCodexVerified": false,
+  "historical": true
+}

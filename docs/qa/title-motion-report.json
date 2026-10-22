@@ -1,0 +1,930 @@
+{
+  "pass": true,
+  "version": "2.3.1",
+  "frames": [
+    {
+      "variant": "day",
+      "time": 100,
+      "state": {
+        "time": 100,
+        "playing": false,
+        "variant": "day",
+        "middle": 0,
+        "red": 0,
+        "icon": 0,
+        "titleMotion": {
+          "time": 100,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 300,
+      "state": {
+        "time": 300,
+        "playing": false,
+        "variant": "day",
+        "middle": 0.5,
+        "red": 0,
+        "icon": 0,
+        "titleMotion": {
+          "time": 300,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 3.064000000000002,
+          "stripes": 0.18,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 480,
+      "state": {
+        "time": 480,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0,
+        "icon": 0.07407407407407407,
+        "titleMotion": {
+          "time": 480,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0.6880000000000006,
+          "stripes": 0.18,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 900,
+      "state": {
+        "time": 900,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 900,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 1320,
+      "state": {
+        "time": 1320,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1320,
+          "active": true,
+          "beat": 0,
+          "amount": 16.32,
+          "phase": 1,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "16.32",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 1400,
+      "state": {
+        "time": 1400,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1400,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 1480,
+      "state": {
+        "time": 1480,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1480,
+          "active": true,
+          "beat": 1,
+          "amount": -25.919999999999998,
+          "phase": 1,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "-25.92",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 1680,
+      "state": {
+        "time": 1680,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1680,
+          "active": true,
+          "beat": 2,
+          "amount": -46,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "-46.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 1800,
+      "state": {
+        "time": 1800,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0.030908295669922727,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1800,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 1860,
+      "state": {
+        "time": 1860,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0.08929873159352675,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1860,
+          "active": true,
+          "beat": 3,
+          "amount": 32,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "32.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 2100,
+      "state": {
+        "time": 2100,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0.5,
+        "icon": 1,
+        "titleMotion": {
+          "time": 2100,
+          "active": true,
+          "beat": 4,
+          "amount": 11.52,
+          "phase": 1,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "11.52",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 2250,
+      "state": {
+        "time": 2250,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 0.7806759367254702,
+        "icon": 1,
+        "titleMotion": {
+          "time": 2250,
+          "active": true,
+          "beat": 5,
+          "amount": 14,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "14.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 2800,
+      "state": {
+        "time": 2800,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 1,
+        "icon": 1,
+        "titleMotion": {
+          "time": 2800,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "day",
+      "time": 3600,
+      "state": {
+        "time": 3600,
+        "playing": false,
+        "variant": "day",
+        "middle": 1,
+        "red": 1,
+        "icon": 1,
+        "titleMotion": {
+          "time": 3600,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 100,
+      "state": {
+        "time": 100,
+        "playing": false,
+        "variant": "night",
+        "middle": 0,
+        "red": 0,
+        "icon": 0,
+        "titleMotion": {
+          "time": 100,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 300,
+      "state": {
+        "time": 300,
+        "playing": false,
+        "variant": "night",
+        "middle": 0.5,
+        "red": 0,
+        "icon": 0,
+        "titleMotion": {
+          "time": 300,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 3.064000000000002,
+          "stripes": 0.18,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 480,
+      "state": {
+        "time": 480,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0,
+        "icon": 0.07407407407407407,
+        "titleMotion": {
+          "time": 480,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0.6880000000000006,
+          "stripes": 0.18,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 900,
+      "state": {
+        "time": 900,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 900,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 1320,
+      "state": {
+        "time": 1320,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1320,
+          "active": true,
+          "beat": 0,
+          "amount": 16.32,
+          "phase": 1,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "16.32",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 1400,
+      "state": {
+        "time": 1400,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1400,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 1480,
+      "state": {
+        "time": 1480,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1480,
+          "active": true,
+          "beat": 1,
+          "amount": -25.919999999999998,
+          "phase": 1,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "-25.92",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 1680,
+      "state": {
+        "time": 1680,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1680,
+          "active": true,
+          "beat": 2,
+          "amount": -46,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "-46.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 1800,
+      "state": {
+        "time": 1800,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0.030908295669922727,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1800,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 1860,
+      "state": {
+        "time": 1860,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0.08929873159352675,
+        "icon": 1,
+        "titleMotion": {
+          "time": 1860,
+          "active": true,
+          "beat": 3,
+          "amount": 32,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "32.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 2100,
+      "state": {
+        "time": 2100,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0.5,
+        "icon": 1,
+        "titleMotion": {
+          "time": 2100,
+          "active": true,
+          "beat": 4,
+          "amount": 11.52,
+          "phase": 1,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "11.52",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 2250,
+      "state": {
+        "time": 2250,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 0.7806759367254702,
+        "icon": 1,
+        "titleMotion": {
+          "time": 2250,
+          "active": true,
+          "beat": 5,
+          "amount": 14,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0.46,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "url(\"#mp-preview-title-motion-photo\")",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "14.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 2800,
+      "state": {
+        "time": 2800,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 1,
+        "icon": 1,
+        "titleMotion": {
+          "time": 2800,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    },
+    {
+      "variant": "night",
+      "time": 3600,
+      "state": {
+        "time": 3600,
+        "playing": false,
+        "variant": "night",
+        "middle": 1,
+        "red": 1,
+        "icon": 1,
+        "titleMotion": {
+          "time": 3600,
+          "active": false,
+          "beat": -1,
+          "amount": 0,
+          "phase": 0,
+          "recoil": 0,
+          "stripes": 0,
+          "source": "contour-displacement",
+          "wholeFrameFlash": false
+        }
+      },
+      "filter": "none",
+      "button": "none",
+      "scale": [
+        "none",
+        "none",
+        "none"
+      ],
+      "warp": "0.00",
+      "overflow": false
+    }
+  ],
+  "sourceBytes": {
+    "deepseek-blue.webp": "643eb29caa2cd3584af1ac7f12b25e4a63cd5ca3b5381bb2b92b0367e71cc744",
+    "deepseek-night.webp": "b4f9c3a66346ae6928c512f761634ca9adb86d4088f85441ae083f375907aa82",
+    "longmarch-black.webp": "965cbe11b8dfebe8d227e1f57ae2d52889e83064d6c9464bcd30ceff3c866393",
+    "transition-day-original.webp": "51663b31b9e6f8d9fbefa4e432e58a559499b6fa2a9b5895f160d4d76e3311ef",
+    "transition-night-original.webp": "e89f8254c8bc0796cac13f53c17cf673e89f218d19e99e8e0662d571a2d3ec09"
+  },
+  "runtime": {
+    "motion": {
+      "time": 1480,
+      "active": true,
+      "beat": 1,
+      "amount": -25.919999999999998,
+      "phase": 1,
+      "recoil": 0,
+      "stripes": 0.46,
+      "source": "contour-displacement",
+      "wholeFrameFlash": false
+    },
+    "photo": "url(\"#mp-title-motion-photo\")",
+    "dialog": "url(\"#mp-title-motion-surface\")",
+    "button": "none"
+  },
+  "geometryUnchanged": true,
+  "reducedMotion": true,
+  "interruptionCleanup": true,
+  "errors": [],
+  "limitation": "Independent browser preview, not live Codex."
+}

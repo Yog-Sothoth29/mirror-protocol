@@ -1,0 +1,43 @@
+const {chromium}=require(process.env.MIRROR_PLAYWRIGHT || 'playwright');
+const fs=require('node:fs/promises'),path=require('node:path'),assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch({channel:'msedge',headless:true});
+ const page=await browser.newPage({viewport:{width:1600,height:1000}});
+ const errors=[],cases=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.clock.install({time:new Date('2026-10-15T16:30:00Z')});
+ await page.goto('http://127.0.0.1:8791');await page.waitForFunction(()=>window.previewReady);
+ await page.evaluate(async()=>{
+   window.__CODEX_THEME_STUDIO_STATE__.cleanup();window.__CODEX_THEME_STUDIO_SWITCHER_STATE__?.cleanup();
+   window.mirrorModule=await import('./runtime/scripts/mirror-protocol.mjs');
+   const native={setTimeout,clearTimeout,setInterval,clearInterval};const pending=new Set(),intervals=new Set();
+   window.setTimeout=(fn,ms,...args)=>{let id=native.setTimeout(()=>{pending.delete(id);fn(...args);},ms);pending.add(id);return id;};
+   window.clearTimeout=id=>{pending.delete(id);native.clearTimeout(id);};
+   window.setInterval=(fn,ms,...args)=>{const id=native.setInterval(fn,ms,...args);intervals.add(id);return id;};
+   window.clearInterval=id=>{intervals.delete(id);native.clearInterval(id);};
+   window.timerCounts=()=>({timeouts:pending.size,intervals:intervals.size});
+   window.resetMirror=()=>{
+     window.__MIRROR_PROTOCOL__?.dispose();document.activeElement?.blur();document.querySelector('dialog').close();document.querySelector('[role="menu"]')?.remove();delete document.hidden;
+     const config={version:1,enabled:true,epochMs:Date.now(),seed:18,quietMinMs:60000,quietMaxMs:60001,redMinMs:10000,redMaxMs:10001};
+     return mirrorModule.installMirrorProtocol(config,mirrorModule.mirrorSchedule);
+   };
+ });
+ const state=()=>page.evaluate(()=>window.__MIRROR_PROTOCOL__.snapshot());
+ const mode=async m=>assert.equal((await state()).mode,m);
+ const reset=()=>page.evaluate(()=>resetMirror());
+ await reset();await page.clock.runFor(60000);assert.equal((await state()).transitioning,true);await page.clock.runFor(421);await mode('red');await page.clock.runFor(16000);await mode('blue');cases.push('automatic blue → red → blue on virtual clock, allowing the full slow photo sequence before recovery');
+ await reset();await page.locator('textarea').focus();await page.clock.runFor(62000);await mode('blue');await page.locator('textarea').blur();await page.clock.runFor(2000);await mode('red');cases.push('focused input defers intrusion, blur releases it');
+ await reset();await page.clock.runFor(60000);await page.locator('textarea').focus();await page.clock.runFor(500);await mode('blue');assert.equal((await state()).transitioning,false);cases.push('input beginning inside 420ms anticipation cancels commit');
+ await reset();await page.evaluate(()=>document.dispatchEvent(new CompositionEvent('compositionstart')));await page.clock.runFor(62000);await mode('blue');await page.evaluate(()=>document.dispatchEvent(new CompositionEvent('compositionend')));await page.clock.runFor(2000);await mode('red');cases.push('IME composition defers intrusion');
+ await reset();await page.evaluate(()=>document.querySelector('dialog').showModal());await page.clock.runFor(62000);await mode('blue');await page.evaluate(()=>document.querySelector('dialog').close());await page.clock.runFor(2000);await mode('red');cases.push('visible dialog blocks, closed dialog does not block');
+ await reset();await page.evaluate(()=>toggleMenu());await page.clock.runFor(62000);await mode('blue');await page.evaluate(()=>document.querySelector('[role="menu"]').remove());await page.clock.runFor(2000);await mode('red');cases.push('visible menu blocks until dismissed');
+ await reset();await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});await page.clock.runFor(62000);await mode('blue');await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});await page.clock.runFor(500);await mode('red');cases.push('hidden-document flag defers; visibility return resumes');
+ await reset();await page.locator('textarea').focus();await page.clock.runFor(68000);await page.locator('textarea').blur();await page.clock.runFor(2000);await mode('blue');cases.push('late intrusion window under 5 seconds is skipped');
+ await reset();await page.clock.runFor(62000);await mode('red');await page.locator('textarea').focus();await page.clock.runFor(10000);await mode('red');await page.locator('textarea').blur();await page.clock.runFor(2000);await mode('blue');cases.push('red recovery also waits for input');
+ await reset();await page.evaluate(()=>window.__MIRROR_PROTOCOL__.choose('red'));await page.clock.runFor(100);await page.evaluate(()=>window.__MIRROR_PROTOCOL__.choose('blue'));await page.clock.runFor(1600);await mode('blue');assert.equal((await state()).automatic,false);cases.push('latest manual choice supersedes an in-flight transition');
+ for(let i=0;i<20;i++){await page.evaluate(m=>window.__MIRROR_PROTOCOL__.choose(m),i%2?'blue':'red');await page.clock.runFor(1400);await mode(i%2?'blue':'red');}cases.push('20 consecutive manual state changes');
+ await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>window.__MIRROR_PROTOCOL__.choose('red'));await mode('red');assert.equal((await state()).transitioning,false);assert.equal(await page.evaluate(()=>document.documentElement.dataset.mirrorPhase),undefined);cases.push('reduced motion has no fracture phase or pending animation');
+ await page.emulateMedia({reducedMotion:'no-preference'});await page.evaluate(()=>window.__MIRROR_PROTOCOL__.choose('blue'));await page.clock.runFor(100);await page.evaluate(()=>window.__MIRROR_PROTOCOL__.dispose());await page.clock.runFor(2000);assert.deepEqual(await page.evaluate(()=>timerCounts()),{timeouts:0,intervals:0});assert.equal(await page.evaluate(()=>document.documentElement.dataset.mirrorMode),undefined);cases.push('dispose in the middle of a transition leaves no timers or marker');
+ for(let i=0;i<30;i++)await reset();assert.deepEqual(await page.evaluate(()=>timerCounts()),{timeouts:0,intervals:1});await page.evaluate(()=>mirrorModule.installMirrorProtocol(null,mirrorModule.mirrorSchedule));assert.deepEqual(await page.evaluate(()=>timerCounts()),{timeouts:0,intervals:0});cases.push('30 repeated installs then fixed-theme handoff have no interval leak');
+ const report={pass:errors.length===0,cases:cases.length,checks:cases,pageErrors:errors,limitations:'Runs in headless Edge with virtual time and simulated document.hidden; does not inject or restart Codex.'};
+ await fs.writeFile(path.resolve(__dirname,'../../previews/behavior-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));await browser.close();assert.equal(errors.length,0);
+})().catch(e=>{console.error(e);process.exit(1)});

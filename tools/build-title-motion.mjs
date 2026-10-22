@@ -1,0 +1,11 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createTitleMotion } from '../runtime/scripts/title-motion.mjs';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const file=path.join(root,'Transition.html');
+let html=await fs.readFile(file,'utf8');
+const start=html.indexOf('const motion=('),end=html.indexOf('let time=0,playing=false',start);
+if(start<0||end<0)throw Error('Standalone title-motion bundle markers missing');
+html=html.slice(0,start)+`const motion=(${createTitleMotion.toString()})({photo:document.querySelector('.title-photo-stack'),id:'mp-preview-title-motion'});\n`+html.slice(end);
+await fs.writeFile(file,html);

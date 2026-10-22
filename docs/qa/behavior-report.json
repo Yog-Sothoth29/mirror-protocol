@@ -1,0 +1,22 @@
+{
+  "pass": true,
+  "cases": 14,
+  "checks": [
+    "automatic blue → red → blue on virtual clock, allowing the full slow photo sequence before recovery",
+    "focused input defers intrusion, blur releases it",
+    "input beginning inside 420ms anticipation cancels commit",
+    "IME composition defers intrusion",
+    "visible dialog blocks, closed dialog does not block",
+    "visible menu blocks until dismissed",
+    "hidden-document flag defers; visibility return resumes",
+    "late intrusion window under 5 seconds is skipped",
+    "red recovery also waits for input",
+    "latest manual choice supersedes an in-flight transition",
+    "20 consecutive manual state changes",
+    "reduced motion has no fracture phase or pending animation",
+    "dispose in the middle of a transition leaves no timers or marker",
+    "30 repeated installs then fixed-theme handoff have no interval leak"
+  ],
+  "pageErrors": [],
+  "limitations": "Runs in headless Edge with virtual time and simulated document.hidden; does not inject or restart Codex."
+}
