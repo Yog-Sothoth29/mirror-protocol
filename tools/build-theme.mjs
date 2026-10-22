@@ -18,13 +18,13 @@ await fs.writeFile(path.join(out,'assets/longmarch-mark.svg'),starLogo('#f45468'
 await fs.writeFile(path.join(out,'assets/deepseek-mark.svg'),whaleLogo);
 const fractureSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000"><g fill="#ec5165" fill-opacity=".035" stroke="#fa687b" stroke-opacity=".7" stroke-width="1.3"><path d="M0 40 370 300 760 120 1020 420 1600 10 1340 580 1600 870 1060 700 810 1000 680 610 0 940 340 520Z"/><path fill="none" d="M0 40 340 520 370 300 680 610 1020 420 1060 700 1340 580M760 120 680 610 810 1000M0 940 1060 700 1600 870M1020 420 1340 580 1600 10M0 480 340 520 0 940M370 300 120 0M1060 700 1600 1000"/></g><g fill="none" stroke="#e6f0ff" stroke-opacity=".32" stroke-width=".65"><path d="M0 44 370 305 765 125 1024 425 1600 16M0 944 685 615 814 1000M1024 425 1064 705 1344 585 1600 875"/></g></svg>`;
 await fs.writeFile(path.join(out,'assets/mirror-fracture.svg'),fractureSvg);
-const blueBrief={id:'deepseek-blue',name:'镜面协议 · DeepSeek',version:'2.3.2',mode:'light',direction:'custom',palette:{accent:'#326cb2',support:'#7762a6',surface:'#f4f9ff',ink:'#20334c'},background:{source:'generated',position:'center right',veil:0.35,prompt:'浅蓝白全息空间，深蓝渐变发色，鲸形元素，人物右侧留出阅读区。'},shape:{radius:14,shadow:'soft'},decorations:{density:'standard',sidebarWidget:{enabled:true,icon:'◈',eyebrow:'DEEPSEEK / ONLINE',title:'蓝鲸协议 · 待命',caption:'镜面稳定 / 静候信号'},cornerCard:{enabled:false,icon:'◈',eyebrow:'MIRROR / 01',title:'镜面彼端',caption:'蓝白 / 正常频段'}},copy:{tagline:'镜面彼端，信号仍在。'}};
+const blueBrief={id:'deepseek-blue',name:'镜面协议 · DeepSeek',version:'2.3.3',mode:'light',direction:'custom',palette:{accent:'#326cb2',support:'#7762a6',surface:'#f4f9ff',ink:'#20334c'},background:{source:'generated',position:'center right',veil:0.35,prompt:'浅蓝白全息空间，深蓝渐变发色，鲸形元素，人物右侧留出阅读区。'},shape:{radius:14,shadow:'soft'},decorations:{density:'standard',sidebarWidget:{enabled:true,icon:'◈',eyebrow:'DEEPSEEK / ONLINE',title:'蓝鲸协议 · 待命',caption:'镜面稳定 / 静候信号'},cornerCard:{enabled:false,icon:'◈',eyebrow:'MIRROR / 01',title:'镜面彼端',caption:'蓝白 / 正常频段'}},copy:{tagline:'镜面彼端，信号仍在。'}};
 const redBrief={...blueBrief,id:'longmarch-black',name:'镜面协议 · 长征',mode:'dark',palette:{accent:'#fb7185',support:'#a7b8d2',surface:'#0b0c14',ink:'#f1eff5'},background:{...blueBrief.background,prompt:'黑色赛博空间，白发红瞳、星形发饰、红白水手服、暗红电路和碎镜。'},shape:{radius:14,shadow:'crisp'},decorations:{density:'standard',sidebarWidget:{enabled:true,icon:'◈',eyebrow:'THE LONG MARCH',title:'长征协议已接入',caption:'红色信号 / 临时接管'},cornerCard:{enabled:false,icon:'◈',eyebrow:'MIRROR / 02',title:'你看到的我',caption:'长征 · LOJI'}},copy:{tagline:'你看到的我。'}};
 const blueData=`url(data:image/webp;base64,${(await fs.readFile(path.join(out,'assets/deepseek-blue.webp'))).toString('base64')})`;
 const redData=`url(data:image/webp;base64,${(await fs.readFile(path.join(out,'assets/longmarch-black.webp'))).toString('base64')})`;
 const fracturedDayData=`url(data:image/webp;base64,${(await fs.readFile(path.join(out,'assets/transition-day-original.webp'))).toString('base64')})`;
 const fracturedNightData=`url(data:image/webp;base64,${(await fs.readFile(path.join(out,'assets/transition-night-original.webp'))).toString('base64')})`;
-blueBrief.version='2.3.2';redBrief.version='2.3.2';
+blueBrief.version='2.3.3';redBrief.version='2.3.3';
 const marks=`--mp-blue-mark:${urlSvg(whaleLogo)};--mp-night-mark:${urlSvg(whaleLogo.replaceAll('#3573bb','#83c9ff'))};--mp-red-mark:${urlSvg(starLogo('#f45468'))};--mp-sigil:${urlSvg(sigilLogo)};`;
 const nightBrief={...blueBrief,id:'deepseek-night',name:'镜面协议 · DeepSeek 夜间',mode:'dark',palette:{accent:'#83c9ff',support:'#b3a1e7',surface:'#081322',ink:'#e4efff'},background:{...blueBrief.background,prompt:'深海午夜玻璃观测台，冰蓝月光，原蓝发蓝瞳与蓝鲸饰物，右侧人物、左侧暗场。'},decorations:{...blueBrief.decorations,sidebarWidget:{...blueBrief.decorations.sidebarWidget,eyebrow:'DEEPSEEK / NIGHT',title:'蓝鲸协议 · 夜航',caption:'深蓝频段 / 低光待命'}}};
 const nightData=`url(data:image/webp;base64,${(await fs.readFile(path.join(out,'assets/deepseek-night.webp'))).toString('base64')})`;
@@ -36,15 +36,15 @@ function extraCss(mode,scope='html.codex-theme-studio-skin') {
   const taskVeil=red?'rgba(9,10,16,.98),rgba(9,10,16,.94) 64%,rgba(9,10,16,.65)':night?'rgba(5,13,25,.99),rgba(5,13,25,.96) 64%,rgba(5,13,25,.7)':'rgba(248,252,255,.98),rgba(248,252,255,.95) 64%,rgba(248,252,255,.66)';
   return `
 ${scope} { ${marks} --mp-canvas:${canvas}; --mp-panel:${panel}; --mp-ink:${ink}; --mp-muted:${muted}; --mp-accent:${accent}; --mp-border:${border}; --mp-art:${red?redData:night?nightData:blueData}; --mp-fracture:none; --mp-mark:${mark}; --mp-veil:linear-gradient(90deg,${homeVeil}); --mp-task-veil:linear-gradient(90deg,${taskVeil}); --mp-art-size:cover; --mp-art-position:center right; --color-background-elevated-secondary:${panel} !important; --color-background-surface-secondary:${panel} !important; --color-background-surface-primary:${canvas} !important; --color-text-primary:${ink} !important; --color-text-tertiary:${muted} !important; --color-icon-primary:${ink} !important; --color-token-foreground:${ink} !important; --color-token-description-foreground:${muted} !important; }
-${scope} main.main-surface, ${scope} main.main-surface.codex-theme-home-shell {
+${scope} :is(main.main-surface,main), ${scope} :is(main.main-surface,main).codex-theme-home-shell {
  background-image:var(--mp-fracture),var(--mp-veil),var(--mp-art) !important;
  background-size:cover,cover,var(--mp-art-size) !important; background-position:center,center,var(--mp-art-position) !important;background-repeat:no-repeat!important;background-color:${canvas}!important;
 }
 ${scope}[data-codex-theme-studio-layout="half"] {--mp-art-size:auto min(80vh,760px);--mp-art-position:right top;--mp-fracture:linear-gradient(180deg,${canvas}00 0%,${canvas}00 38%,${canvas} 82%);}
 @media(max-width:1200px),(max-aspect-ratio:5/4){${scope}{--mp-art-size:auto min(80vh,760px);--mp-art-position:right top;--mp-fracture:linear-gradient(180deg,${canvas}00 0%,${canvas}00 38%,${canvas} 82%);}}
-${scope} main.main-surface:has(.markdown),${scope} main.main-surface:has([data-testid="conversation-turn"]) {--mp-veil:var(--mp-task-veil);background-image:var(--mp-fracture),var(--mp-veil),var(--mp-art) !important;}
-${scope} .composer-surface-chrome {background:${red?'rgba(20,19,29,.97)':night?'rgba(16,31,51,.97)':'rgba(255,255,255,.94)'} !important; border-color:${border} !important; box-shadow:0 12px 38px ${dark?'#0006':'#355d9219'},inset 0 2px ${red?'#f454685c':'#75b8f052'} !important;backdrop-filter:none!important;}
-${scope} .composer-surface-chrome:focus-within {border-color:${accent} !important;box-shadow:0 0 0 3px ${red?'#f454681a':'#3573bb16'},0 14px 42px ${red?'#0006':'#355d9218'} !important;}
+${scope} :is(main.main-surface,main):has(:is(.markdown,[data-testid="conversation-turn"],[data-turn-key])) {--mp-veil:var(--mp-task-veil);background-image:var(--mp-fracture),var(--mp-veil),var(--mp-art) !important;}
+${scope} :is(.composer-surface-chrome,[data-composer-body]) {background:${red?'rgba(20,19,29,.97)':night?'rgba(16,31,51,.97)':'rgba(255,255,255,.94)'} !important; border-color:${border} !important; box-shadow:0 12px 38px ${dark?'#0006':'#355d9219'},inset 0 2px ${red?'#f454685c':'#75b8f052'} !important;backdrop-filter:none!important;}
+${scope} :is(.composer-surface-chrome,[data-composer-body]):focus-within {border-color:${accent} !important;box-shadow:0 0 0 3px ${red?'#f454681a':'#3573bb16'},0 14px 42px ${red?'#0006':'#355d9218'} !important;}
 ${scope} .cts-decoration-icon {color:transparent !important;background-color:transparent !important;background-image:var(--mp-mark) !important;background-size:contain !important;background-repeat:no-repeat !important;box-shadow:none !important;border-radius:0 !important;}
 ${scope} .cts-decoration-card {border-radius:14px;box-shadow:0 12px 35px ${red?'#0004':'#3573bb12'},inset 3px 0 ${accent};backdrop-filter:none!important;}
 ${scope} .cts-decoration-card::after {background:repeating-linear-gradient(0deg,transparent 0px,transparent 5px,${red?'#fa687b09':'#3573bb06'} 6px);border-radius:0;}
@@ -66,8 +66,8 @@ ${scope} :is([role="dialog"],[aria-modal="true"],[role="menu"],[data-radix-poppe
 ${scope} pre,${scope} code {--color-token-editor-background:${panel};}
 ${scope} button[aria-pressed="true"],${scope} [aria-current="page"] {background-color:${red?'#4e2636':night?'#173958':'#dfedfc'} !important;}
 ${scope} .cts-corner-card {transform:none;}
-${red?`${scope} .cts-decoration-icon {animation:mp-red-signal 5.6s ease-in-out infinite;}\n${scope} .composer-surface-chrome {border-top-color:#fb7185 !important;}`:''}
-${generateSurfaceCss(mode,scope)}
+${red?`${scope} .cts-decoration-icon {animation:mp-red-signal 5.6s ease-in-out infinite;}\n${scope} :is(.composer-surface-chrome,[data-composer-body]) {border-top-color:#fb7185 !important;}`:''}
+${generateSurfaceCss(mode,scope).replaceAll('.composer-surface-chrome',':is(.composer-surface-chrome,[data-composer-body])')}
 `;
 }
 const blue=await createTheme(blueBrief,{artPath:path.join(out,'assets/deepseek-blue.webp')});

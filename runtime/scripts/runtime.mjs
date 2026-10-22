@@ -144,6 +144,7 @@ async function loadPayload(reference, usage = unavailableUsage()) {
     id: theme.manifest.id,
     displayName: theme.manifest.displayName,
     version: theme.manifest.version,
+    hasArt: Boolean(theme.artPath),
     decorations: theme.manifest.decorations ?? {
       sidebarWidget: { enabled: false, icon: "", eyebrow: "", title: "", caption: "" },
       cornerCard: { enabled: false, icon: "", eyebrow: "", title: "", caption: "" },
@@ -193,7 +194,7 @@ async function managerExpression(control) {
 const bridgeDrainExpression = `(() => window.__CODEX_THEME_STUDIO_SWITCHER_STATE__?.drainRequests?.() ?? [])()`;
 const bridgeDeliveryExpression = (id, result, error) => `(() => window.__CODEX_THEME_STUDIO_SWITCHER_STATE__?.deliver?.(${JSON.stringify(id)}, ${JSON.stringify(result ?? null)}, ${JSON.stringify(error ?? null)}) ?? false)()`;
 
-const verifyExpression = (expected, smoke) => `(() => {
+const verifyExpression = (expected, smoke, auxiliary = false) => `(() => {
   const rect = (node) => { if (!node) return null; const r = node.getBoundingClientRect(); return { left:r.left, top:r.top, right:r.right, bottom:r.bottom, width:r.width, height:r.height }; };
   const visible = (value) => Boolean(value && value.width > 0 && value.height > 0);
   const overlap = (a,b) => a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
@@ -208,7 +209,7 @@ const verifyExpression = (expected, smoke) => `(() => {
   const switcherCollisions = switcherRect ? [...document.querySelectorAll('button,a[href],input,textarea,select,[contenteditable="true"],[role="button"],[role="link"]')]
     .filter(node => !switcher.contains(node) && !node.closest('#codex-theme-studio-decorations')).map(rect).filter(visible).filter(control => overlap(switcherRect, control)).length : 0;
   const home = document.querySelector('[role="main"]:has([data-testid="home-icon"])');
-  const composer = document.querySelector('.composer-surface-chrome');
+  const composer = document.querySelector('.composer-surface-chrome,[data-composer-body]');
   const sidebar = document.querySelector('aside.app-shell-left-panel');
   const main = document.querySelector('main.main-surface') || document.querySelector('main');
   const result = {
@@ -226,6 +227,7 @@ const verifyExpression = (expected, smoke) => `(() => {
     switcherPresent: Boolean(switcher), switcherBodySibling: switcher?.parentElement === document.body,
     switcherButtonLabel: switcherButton?.getAttribute('aria-label') || null, switcherCollisions,
     main: rect(main), sidebar: rect(sidebar), composer: rect(composer), home: Boolean(home),
+    backgroundHasArt: Boolean(main && /url\\(/i.test(getComputedStyle(main).backgroundImage)),
     nativeControls: controls.length,
     horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     viewport: { width: innerWidth, height: innerHeight }
@@ -235,7 +237,8 @@ const verifyExpression = (expected, smoke) => `(() => {
   result.pass = result.installed && result.themeId === expected.id && result.version === expected.version && result.stylePresent &&
     result.decorationsPresent && result.decorationsAriaHidden && result.decorationsPointerEvents === 'none' && result.decorationsBodySibling &&
     result.decorationCollisions === 0 && result.switcherPresent && result.switcherBodySibling && result.switcherButtonLabel &&
-    result.switcherCollisions === 0 && !result.horizontalOverflow && strictSurface;
+    result.switcherCollisions === 0 && !result.horizontalOverflow && strictSurface &&
+    (!expected.hasArt || ${auxiliary ? 'true' : 'false'} || result.backgroundHasArt);
   return result;
 })()`;
 
@@ -250,7 +253,7 @@ async function capture(session, output) {
 function isAuxiliaryTarget(target) {
   try {
     const route = new URL(target.url).searchParams.get("initialRoute") ?? "";
-    return route === "/hotkey-window" || route === "/avatar-overlay" || route.startsWith("/overlay") || route.startsWith("/diagnostic");
+    return new URL(target.url).pathname === "/detached-window.html" || route === "/hotkey-window" || route === "/avatar-overlay" || route.startsWith("/overlay") || route.startsWith("/diagnostic");
   } catch { return false; }
 }
 
@@ -271,7 +274,7 @@ async function runOneShot(options) {
       else if (options.mode === "once") { await apply(session, payload); await new Promise((resolve) => setTimeout(resolve, 500)); }
       const result = options.mode === "remove"
         ? await session.evaluate("!document.documentElement.classList.contains('codex-theme-studio-skin')")
-        : await session.evaluate(verifyExpression(payload.theme, options.mode === "smoke" || isAuxiliaryTarget(target)));
+        : await session.evaluate(verifyExpression(payload.theme, options.mode === "smoke" || isAuxiliaryTarget(target), isAuxiliaryTarget(target)));
       results.push({ targetId: target.id, title: target.title, url: target.url, result });
       if (options.screenshot && !screenshotCaptured && !isAuxiliaryTarget(target)) {
         try { await capture(session, options.screenshot); screenshotCaptured = true; }
@@ -359,7 +362,7 @@ async function runWatch(options) {
     if (!liveSessions().length) throw new Error("No Codex renderer is connected to Theme Studio CDP");
     for (const [id, session] of sessions) {
       const target = { id, url: session.target.url };
-      const result = await session.evaluate(verifyExpression(payload.theme, isAuxiliaryTarget(target)));
+      const result = await session.evaluate(verifyExpression(payload.theme, isAuxiliaryTarget(target), isAuxiliaryTarget(target)));
       if (!result.pass) throw new Error(`Live verification failed for renderer ${id}`);
     }
     return true;

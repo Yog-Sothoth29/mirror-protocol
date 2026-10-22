@@ -4,7 +4,7 @@ DeepSeek 蓝白日间 / 深蓝夜间，与黑红长征机之间的低频随机�
 
 ![镜面协议](docs/media/wechat-cover-900x383.png)
 
-**v2.3.2 · 实验性桌面主题。** 已通过独立 Edge 浏览器夹具验证；真实 Codex 兼容性尚未验收。非 OpenAI、DeepSeek、TFR 或 CD Projekt Red 官方项目。
+**v2.3.3 · 实验性桌面主题。** 已在 Windows Store Codex 的真实聊天页验证背景图片和主题连接；首页、全部弹窗等状态仍需进一步实机检查。非 OpenAI、DeepSeek、TFR 或 CD Projekt Red 官方项目。
 
 ## 直接让 Codex 安装
 

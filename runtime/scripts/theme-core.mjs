@@ -294,21 +294,21 @@ html.codex-theme-studio-skin aside.app-shell-left-panel {
   box-shadow: inset -1px 0 ${alpha("#FFFFFF", dark ? 0.05 : 0.66)} !important;
 }
 
-html.codex-theme-studio-skin main.main-surface {
+html.codex-theme-studio-skin :is(main.main-surface,main) {
   color: var(--cts-ink) !important;
   background: ${baseGradient} !important;
   border-color: ${alpha(c.border, 0.66)} !important;
   box-shadow: ${shadow} !important;
 }
 
-html.codex-theme-studio-skin main.main-surface.codex-theme-home-shell {
+html.codex-theme-studio-skin :is(main.main-surface,main).codex-theme-home-shell {
   background-image: ${homeVeil}, var(--codex-theme-art), ${baseGradient} !important;
   background-repeat: no-repeat !important;
   background-size: cover, cover, cover !important;
   background-position: center, ${artPosition || "center right"}, center !important;
 }
 
-html.codex-theme-studio-skin .composer-surface-chrome {
+html.codex-theme-studio-skin :is(.composer-surface-chrome,[data-composer-body]) {
   color: var(--cts-ink) !important;
   background: ${alpha(c.elevated, dark ? 0.88 : 0.90)} !important;
   border-color: ${alpha(palette.accent, dark ? 0.42 : 0.34)} !important;
