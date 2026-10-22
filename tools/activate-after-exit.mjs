@@ -7,13 +7,25 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { takeRoot, requireNode, readInstallation, managerState } from './installer-common.mjs';
 
-export async function acquireActivationLock(root) {
+export async function acquireActivationLock(root, { isPidPresent } = {}) {
   const filename = path.join(root, 'activation.lock');
   const value = JSON.stringify({ pid: process.pid, id: crypto.randomUUID(), startedAt: new Date().toISOString() });
   let handle;
   try { handle = await fs.open(filename, 'wx', 0o600); }
   catch (error) {
-    if (error.code === 'EEXIST') throw new Error('Another activation helper already holds activation.lock. Do not start a second helper. If a previous helper crashed, verify it has exited before removing that lock.');
+    if (error.code === 'EEXIST' && isPidPresent) {
+      const previous = await fs.readFile(filename, 'utf8');
+      let record;
+      try { record = JSON.parse(previous); } catch { throw new Error('Invalid activation.lock; refusing to remove it automatically.'); }
+      if (!Number.isInteger(record.pid) || record.pid <= 0) throw new Error('Invalid activation lock PID.');
+      if (!await isPidPresent(record.pid)) {
+        // Only remove a dead owner's exact record, never a changed or live lock.
+        if (await fs.readFile(filename, 'utf8') !== previous) throw new Error('Activation lock changed; retry after checking the active helper.');
+        await fs.unlink(filename);
+        return acquireActivationLock(root);
+      }
+    }
+    if (error.code === 'EEXIST') throw new Error('Another activation helper already holds activation.lock. Do not start a second helper.');
     throw error;
   }
   await handle.writeFile(value);
@@ -51,10 +63,8 @@ export async function waitAndActivate({ listPids, cdpReady, apply, update, check
       await update({ phase: 'timed-out', runningProcesses: pids.length, message: 'Stopped waiting after the time limit. Codex was left running and no activation command was launched.' });
       return { phase: 'timed-out', exitCode: 2 };
     }
-    if (pids.length !== previousCount) {
-      await update({ phase: 'waiting', runningProcesses: pids.length, message: 'Waiting for you to fully exit Codex from its menu. This helper will not close or terminate it.' });
-      previousCount = pids.length;
-    }
+    await update({ phase: 'waiting', runningProcesses: pids.length, heartbeatOnly: pids.length === previousCount, message: 'Waiting for you to fully exit Codex from its menu. This helper will not close or terminate it.' });
+    previousCount = pids.length;
     await sleep(Math.min(pollMs, Math.max(0, deadline - now())));
   }
 }
@@ -76,7 +86,8 @@ async function main() {
     if (timeoutMs < 1000 || timeoutMs > 600000) throw new Error('Timeout must be between 1000 and 600000 milliseconds.');
   }
   const installation = await readInstallation(root);
-  const unlock = await acquireActivationLock(installation.root);
+  const platform = await import(pathToFileURL(path.join(installation.release, 'runtime/scripts/platform-runtime.mjs')).href);
+  const unlock = await acquireActivationLock(installation.root, { isPidPresent: async pid => platform.processRows().some(row => row.pid === pid) });
   const startedAt = new Date().toISOString();
   const statusPath = path.join(installation.root, 'activation.json');
   const logPath = path.join(installation.root, 'activation.log');
@@ -86,13 +97,15 @@ async function main() {
     catch { console.log(value.message); return; }
     await safeFile(statusPath);
     await safeFile(logPath);
-    const record = { ...value, helperPid: process.pid, startedAt, updatedAt: new Date().toISOString(), timeoutMs, theme: 'mirror-protocol-auto' };
+    const { heartbeatOnly, ...publicValue } = value;
+    const record = { ...publicValue, helperPid: process.pid, startedAt, updatedAt: new Date().toISOString(), timeoutMs, theme: 'mirror-protocol-auto' };
     await fs.writeFile(statusPath, JSON.stringify(record, null, 2) + '\n', { mode: 0o600 });
-    await fs.appendFile(logPath, `[${record.updatedAt}] ${value.phase}: ${value.message}\n`, { mode: 0o600 });
-    console.log(value.message);
+    if (!heartbeatOnly) {
+      await fs.appendFile(logPath, `[${record.updatedAt}] ${value.phase}: ${value.message}\n`, { mode: 0o600 });
+      console.log(value.message);
+    }
   };
   try {
-    const platform = await import(pathToFileURL(path.join(installation.release, 'runtime/scripts/platform-runtime.mjs')).href);
     const manager = await managerState(installation);
     if (manager?.alive && !manager.owned) throw new Error('Another Theme Studio installation owns the running manager. This helper will not take it over.');
     const executable = await platform.findOfficialApp({ explicitPath: process.env.CODEX_THEME_STUDIO_APP_PATH });

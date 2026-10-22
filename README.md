@@ -28,7 +28,7 @@ node "$HOME/.mirror-protocol/mirror.mjs" status --json
 node "$HOME/.mirror-protocol/mirror.mjs" verify --screenshot "$HOME/mirror-protocol-check.png"
 ```
 
-若普通启动后无法激活，可运行 `node "$HOME/.mirror-protocol/activate-after-exit.mjs"`，然后从菜单完全退出 Codex；程序等待退出后仅启动一次主题版。
+若普通启动后无法激活，可运行 `node "$HOME/.mirror-protocol/launch-activation.mjs"`。等独立等待程序报告就绪后，从菜单完全退出 Codex；程序观察到退出后仅启动一次主题版。Windows 使用 WMI 独立进程，避免辅助程序随 Codex 关闭而消失。详见 [退出后启用](INSTALL.md#普通启动或关闭后驻留导致无法激活)。
 
 安装器不会自动重启；首次启用本机调试端口可能需要一次获准的正常重启。[Windows 兼容说明](WINDOWS-COMPATIBILITY.md)。
 

@@ -1,5 +1,15 @@
 # Windows 运行时兼容性
 
+## 退出后辅助程序的独立性
+
+从 Codex 内用 `Start-Process` 或 Node `detached` 启动的程序，可能仍属于 Codex 的 Windows 进程 Job。实测旧等待程序退出后未写完成/失败记录，留下已不存在的 helperPid 和旧 waiting 状态。
+
+新入口 `launch-activation.mjs` 通过 WMI `Win32_Process.Create` 启动，读回路径、完整参数、桌面会话与新状态。真实临时 sentinel 检查确认父进程为 WmiPrvSE、处于同一用户会话、未加入源 launcher 的专用生命周期 Job；源 Job 关闭后仍完成延迟写入并自然退出。13项辅助检查及安装回归通过，测试不关闭或注入用户 Codex。
+
+独立新 profile 的官方 Codex 已在 `127.0.0.1` 返回 Chrome 155 / CDP 1.3 响应。这仅证实可执行文件支持本机 CDP，不代表主窗口的主题已激活；仍以主窗口 status、verify 与截图为准。
+
+## 应用发现与参数传递
+
 已对 Microsoft Store 的 OpenAI Codex 26.1016.6573.0 做只读发现验证：自动找到 `app/ChatGPT.exe`，并通过 Windows Authenticode 的 `Valid` 状态和 OpenAI 签名主体检查。未因本项验证关闭、重启或注入应用。
 
 本次修复了两处 Windows PowerShell 兼容问题：

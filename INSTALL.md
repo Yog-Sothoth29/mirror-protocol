@@ -57,15 +57,17 @@ node "$HOME/.mirror-protocol/mirror.mjs" use mirror-protocol-auto --restart-exis
 
 ## 普通启动或关闭后驻留导致无法激活
 
-如果 `status` 仍是 inactive，且启动提示 Codex 已运行但没有调试端口，不要再次普通打开应用。先在独立终端运行：
+如果 `status` 仍是 inactive，且启动提示 Codex 已运行但没有调试端口，使用独立等待入口：
 
 ```powershell
-node "$HOME/.mirror-protocol/activate-after-exit.mjs"
+node "$HOME/.mirror-protocol/launch-activation.mjs"
 ```
 
-看到等待提示后，从 Codex 的菜单**完全退出**应用；不要只关闭窗口，也不要从任务栏重新打开。辅助程序最多等待10分钟，观察到官方进程全部退出后，仅调用原安装入口启动一次带本机调试端口的 Codex。它不请求退出、不结束进程、不自动重试，不创建其他主题管理器。启动完成后仍需 status、verify 和截图检查。
+Windows 入口通过系统 WMI 进程服务启动隐藏辅助程序，读回进程身份与新的等待状态后才报告已就绪；不创建计划任务或开机启动项。不能只用 Codex 内的 `Start-Process`、Node `detached` 或直接运行 `activate-after-exit.mjs`：这些方式可能随 Codex 退出一同中断，留下旧的 waiting 状态。
 
-等待状态在 `~/.mirror-protocol/activation.json`，摘要日志在 `activation.log`。建立 `activation.cancel` 文件可以取消等待；下次重新等待前删除该取消文件。卸载或更换安装版本也会自动停止等待。一个安装目录只允许一个等待程序。
+看到独立等待程序已就绪后，从 Codex 的菜单**完全退出**应用；不要只关闭窗口，也不要从任务栏重新打开。辅助程序最多等待10分钟，观察到官方进程全部退出后，仅调用原安装入口启动一次带本机调试端口的 Codex。它不请求退出、不结束进程、不自动重试，不创建其他主题管理器。启动完成后仍需 status、verify 和截图检查。
+
+等待状态在 `~/.mirror-protocol/activation.json`，`updatedAt` 会随轮询刷新；摘要日志在 `activation.log`。仅有旧 waiting 记录不能证明程序仍在运行，须核对 helperPid、进程身份与更新时间。入口只在确认旧锁的进程已不存在后清理旧锁，遇到活动进程拒绝并行启动。建立 `activation.cancel` 文件可以取消等待；下次重新等待前删除该取消文件。卸载或更换安装版本也会自动停止等待。一个安装目录只允许一个等待程序。
 
 ## 恢复与卸载
 

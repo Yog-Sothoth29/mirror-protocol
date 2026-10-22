@@ -20,7 +20,8 @@ test('running without CDP waits; it never launches before the exit observation',
   const result = await waitAndActivate(f.options);
   assert.equal(result.phase, 'applied');
   assert.equal(f.calls, 1);
-  assert.deepEqual(f.events.map(e => e.phase), ['waiting', 'applying', 'applied']);
+  assert.deepEqual(f.events.map(e => e.phase), ['waiting', 'waiting', 'applying', 'applied']);
+  assert.equal(f.events[1].heartbeatOnly, true);
 });
 
 test('all observed application processes must exit and apply is called exactly once', async () => {
@@ -72,4 +73,15 @@ test('exclusive helper lock rejects a second instance and is released normally',
     // Only this test-created empty directory is removed, never application data.
     await fs.rmdir(root);
   }
+});
+
+test('stale lock is reclaimed only after its PID is confirmed absent', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'mp-activation-stale-'));
+  try {
+    await fs.writeFile(path.join(root, 'activation.lock'), JSON.stringify({ pid: 12345, id: 'old' }));
+    await assert.rejects(acquireActivationLock(root, { isPidPresent: async pid => { assert.equal(pid, 12345); return true; } }), /Another activation helper/);
+    assert.equal(JSON.parse(await fs.readFile(path.join(root, 'activation.lock'), 'utf8')).id, 'old');
+    const release = await acquireActivationLock(root, { isPidPresent: async pid => { assert.equal(pid, 12345); return false; } });
+    await release();
+  } finally { await fs.rmdir(root); }
 });
