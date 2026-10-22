@@ -43,6 +43,20 @@ npm run preview
 
 ![碎镜转场素材演示](docs/media/mirror-transition.gif)
 
+## 模式图片
+
+以下是独立浏览器界面预览，不是本机 Codex 实机截图。
+
+| 日间 | 夜间 | 长征机 |
+|---|---|---|
+| ![日间](docs/media/interface-blue.png) | ![夜间](docs/media/interface-night.png) | ![长征机](docs/media/interface-red.png) |
+
+| 日间碎镜 | 夜间碎镜 |
+|---|---|
+| ![日间碎镜](docs/media/interface-fracture-day.png) | ![夜间碎镜](docs/media/interface-fracture-night.png) |
+
+[复制给其他 Codex 的安装提示词](INSTALL-PROMPT.md)
+
 ## 有什么
 
 - 蓝白 DeepSeek、深蓝夜间、黑红长征机三套完整配色，以及自动频段主题。
