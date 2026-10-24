@@ -76,7 +76,7 @@ html[data-mirror-phase=breach] #${ID} .cts-mirror-symbol{transition-delay:0s}
   };
   const showError = (error) => { list.replaceChildren(); const node = document.createElement("div"); node.className = "cts-switch-error"; node.textContent = error.message; list.append(node); };
   const mirrorId = () => document.documentElement.dataset.codexThemeStudio;
-  let deepseekTheme='deepseek-blue';
+  let deepseekTheme='deepseek-night';
   const setMirrorSymbol=active=>{
     if(!active){if(button.querySelector('.cts-mirror-symbol'))button.textContent='◐';return;}
     if(button.querySelector('.cts-mirror-symbol'))return;

@@ -23,6 +23,10 @@ export function validateMirrorConfig(raw) {
   if (raw.version !== 1 || raw.enabled !== true) throw new Error('Unsupported mirror protocol configuration');
   const ranges = { epochMs: [0, 1e14], seed: [1, 4294967295], quietMinMs: [60000, 86400000], quietMaxMs: [60000, 86400000], redMinMs: [10000, 300000], redMaxMs: [10000, 300000] };
   const result = { version: 1, enabled: true };
+  if (raw.defaultAppearance !== undefined) {
+    if (!['day', 'night'].includes(raw.defaultAppearance)) throw new Error('Invalid default appearance');
+    result.defaultAppearance = raw.defaultAppearance;
+  }
   for (const [key, [min, max]] of Object.entries(ranges)) {
     if (!Number.isSafeInteger(raw[key]) || raw[key] < min || raw[key] > max) throw new Error(`Invalid mirror setting: ${key}`);
     result[key] = raw[key];
@@ -33,7 +37,7 @@ export function validateMirrorConfig(raw) {
 
 export function extendRendererExpression(baseExpression, rawConfig) {
   const config = validateMirrorConfig(rawConfig);
-  return `(() => { window.__MIRROR_PROTOCOL__?.dispose?.(); return (${baseExpression.trim()}).then(result => { (${installMirrorProtocol.toString()})(${JSON.stringify(config)}, ${mirrorSchedule.toString()}, ${createTitleMotion.toString()}, ${visibleMain.toString()}); return result; }); })()`;
+  return `(() => { window.__MIRROR_PROTOCOL__?.dispose?.(); ${config ? `document.documentElement.dataset.mirrorAppearance=${JSON.stringify(config.defaultAppearance ?? 'day')};` : ''} return (${baseExpression.trim()}).then(result => { (${installMirrorProtocol.toString()})(${JSON.stringify(config)}, ${mirrorSchedule.toString()}, ${createTitleMotion.toString()}, ${visibleMain.toString()}); return result; }); })()`;
 }
 
 export function installMirrorProtocol(config, schedule, titleMotionFactory = createTitleMotion, resolveMain = visibleMain) {
@@ -44,7 +48,7 @@ export function installMirrorProtocol(config, schedule, titleMotionFactory = cre
   const STYLE_ID = 'mp-motion-style';
   const STAGE_CLASS = 'mp-stage';
   let disposed = false, automatic = true, current = 'blue', transitioning = false, composing = false;
-  let appearance = 'day';
+  let appearance = config.defaultAppearance ?? 'day';
   let transitionGeneration = 0;
   let stage = null, mainEl = null, mainIsolation = null, mainPosition = null;
   let layerRefs = null, warmTimer = 0, warmIdle = false, cpEffectTimer = 0;

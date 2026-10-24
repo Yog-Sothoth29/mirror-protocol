@@ -35,7 +35,7 @@ node "$HOME/.mirror-protocol/mirror.mjs" verify --screenshot "$HOME/mirror-proto
 
 macOS 的 shell 可运行相同三条命令。也可初次安装时运行 **node tools/install.mjs --apply**；它同样不会自动授权重启。
 
-自动主题以浅蓝日间为默认基底；圆形按钮菜单可选择夜间、锁定长征机或恢复随机入侵。只有预览通过不能说明真实 Codex 已成功应用。应用后还应运行：
+自动主题以深蓝夜间为默认基底；圆形按钮菜单可锁定长征机或恢复随机入侵。日间在当前 Codex 仍存在白字浅底兼容问题，保留为实验选项，不作为默认。只有预览通过不能说明真实 Codex 已成功应用。应用后还应运行：
 
 ```sh
 node <安装目录>/releases/<当前版本>/runtime/scripts/runtime.mjs --verify --theme mirror-protocol-auto --screenshot <本机截图路径>

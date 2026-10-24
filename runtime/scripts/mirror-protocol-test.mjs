@@ -24,5 +24,7 @@ assert.ok(new Set(durations.map(x=>x[1])).size>3800);checks++;
 assert.notDeepEqual(mirrorSchedule({...config,seed:8},config.epochMs),mirrorSchedule(config,config.epochMs));checks++;
 for(const raw of [{...config,seed:NaN},{...config,epochMs:Infinity},{...config,quietMaxMs:5000},{...config,version:2},{...config,redMaxMs:20000}]){assert.throws(()=>validateMirrorConfig(raw));checks++;}
 assert.equal(validateMirrorConfig(null),null);checks++;
+assert.equal(validateMirrorConfig({...config,defaultAppearance:'night'}).defaultAppearance,'night');checks++;
+assert.throws(()=>validateMirrorConfig({...config,defaultAppearance:'invalid'}));checks++;
 const copied=validateMirrorConfig({...config,script:'malicious',css:'arbitrary'});assert.equal(copied.script,undefined);assert.equal(copied.css,undefined);checks+=2;
 console.log(JSON.stringify({pass:true,checks,cycles:durations.length,simulatedDays:((boundary-config.epochMs)/86400000).toFixed(2),quietRange:[Math.min(...durations.map(x=>x[0])),Math.max(...durations.map(x=>x[0]))],redRange:[Math.min(...durations.map(x=>x[1])),Math.max(...durations.map(x=>x[1]))]},null,2));
