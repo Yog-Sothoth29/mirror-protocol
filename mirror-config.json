@@ -1,6 +1,7 @@
 {
   "version": 1,
   "enabled": true,
+  "defaultAppearance": "night",
   "epochMs": 1792075846065,
   "seed": 20261015,
   "quietMinMs": 360000,
